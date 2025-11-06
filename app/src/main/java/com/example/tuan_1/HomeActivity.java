@@ -1,11 +1,9 @@
 package com.example.tuan_1;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-
+import android.widget.GridView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.tuan_1.GridAdapter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -14,12 +12,22 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
 
+        GridView gridView = findViewById(R.id.gridView);
+
+        // Danh sách chữ
         String[] items = {"Apple", "Banana", "Cherry", "Date", "Grapes"};
-        // Find ListView by ID
-        ListView listView = findViewById(R.id.listView);
-        // Create an ArrayAdapter
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
-        // Set adapter to ListView
-        listView.setAdapter(adapter);
+
+        // Danh sách hình (đặt file ảnh trong res/drawable/)
+        int[] images = {
+                R.drawable.apple,   // apple.png trong drawable
+                R.drawable.banana,  // banana.png
+                R.drawable.cherry,  // cherry.png
+                R.drawable.date,    // date.png
+                R.drawable.grapes   // grapes.png
+        };
+
+        // Tạo adapter và gắn vào GridView
+        GridAdapter adapter = new GridAdapter(this, items, images);
+        gridView.setAdapter(adapter);
     }
 }
