@@ -19,13 +19,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shopee"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:iconifiedByDefault="false"
+            android:queryHint="Tìm kiếm sản phẩm..."
+            android:background="@android:color/white"
+            android:padding="4dp"
+            android:elevation="2dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -69,7 +71,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_view" />
+                android:src="@drawable/home" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,9 +88,9 @@
             android:gravity="center">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_add" />
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/shop" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,7 +109,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_dialog_info" />
+                android:src="@drawable/announce" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -124,9 +126,9 @@
             android:gravity="center">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_myplaces" />
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/user" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
