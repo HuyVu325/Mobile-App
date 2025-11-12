@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             } else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
             }
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
             startActivity(intent);
-            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
     }
 }

@@ -20,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Danh sách chữ
         String[] items = {"Apple", "Banana", "Cherry", "Date", "Grapes"};
+        String[] prices = {"10.000đ", "8.000đ", "12.000đ", "9.000đ", "15.000đ"};
 
         // Danh sách hình (đặt file ảnh trong res/drawable/)
         int[] images = {
@@ -31,7 +32,7 @@ public class HomeActivity extends AppCompatActivity {
         };
 
         // Tạo adapter và gắn vào GridView
-        GridAdapter adapter = new GridAdapter(this, items, images);
+        GridAdapter adapter = new GridAdapter(this, items, images, prices);
         gridView.setAdapter(adapter);
 
         // tạo kết nối với trang cart
@@ -40,7 +41,15 @@ public class HomeActivity extends AppCompatActivity {
         CartButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, CartActivity.class);
             startActivity(intent);
-            finish();
+        });
+
+        // khi click vào một ảnh
+        gridView.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+            intent.putExtra("product_name", items[position]);
+            intent.putExtra("product_image", images[position]);
+            intent.putExtra("product_price", prices[position]);
+            startActivity(intent);
         });
     }
 }

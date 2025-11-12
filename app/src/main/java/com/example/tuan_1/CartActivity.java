@@ -20,7 +20,7 @@ public class CartActivity extends AppCompatActivity {
         homeButton.setOnClickListener(v -> {
             Intent intent = new Intent(CartActivity.this, HomeActivity.class);
             startActivity(intent);
-            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
     }
 }

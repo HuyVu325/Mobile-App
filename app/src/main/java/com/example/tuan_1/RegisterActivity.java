@@ -26,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity{
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
             startActivity(intent);
-            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
 
         btnRegister.setOnClickListener(v -> {
@@ -40,8 +40,8 @@ public class RegisterActivity extends AppCompatActivity{
             } else {
                 Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                 startActivity(intent);
-                finish();
                 Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
     }
