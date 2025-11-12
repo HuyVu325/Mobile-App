@@ -1,11 +1,15 @@
 package com.example.tuan_1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.tuan_1.GridAdapter;
 
 public class HomeActivity extends AppCompatActivity {
+    private LinearLayout CartButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,5 +33,14 @@ public class HomeActivity extends AppCompatActivity {
         // Tạo adapter và gắn vào GridView
         GridAdapter adapter = new GridAdapter(this, items, images);
         gridView.setAdapter(adapter);
+
+        // tạo kết nối với trang cart
+        CartButton = findViewById(R.id.cart);
+
+        CartButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, CartActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }
