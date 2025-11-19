@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 🔙 Thanh tiêu đề có nút Back -->
+        <!-- Thanh tiêu đề có nút Back -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,6 +79,50 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_marginBottom="24dp" />
+
+
+        <!-- tang giam so luong san pham muon mua -->
+        <LinearLayout
+            android:id="@+id/quantityLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/quantity_box"
+            android:paddingHorizontal="6dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- Nút trừ -->
+            <ImageView
+                android:id="@+id/btnMinus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_minus"
+                android:background="@drawable/quantity_button_bg"
+                android:contentDescription="minus"/>
+
+            <!-- Số lượng -->
+            <TextView
+                android:id="@+id/tvQuantity"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="1"
+                android:textSize="18sp"
+                android:textColor="#212121"/>
+
+            <!-- Nút cộng -->
+            <ImageView
+                android:id="@+id/btnPlus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_plus"
+                android:background="@drawable/quantity_button_bg"
+                android:contentDescription="plus"/>
+
+        </LinearLayout>
 
         <!-- Nút thêm vào giỏ -->
         <Button

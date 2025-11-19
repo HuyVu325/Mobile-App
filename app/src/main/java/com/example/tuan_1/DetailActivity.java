@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity {
+    private int quantity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +33,9 @@ public class DetailActivity extends AppCompatActivity {
 
         // Xử lý thêm vào giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
+            Product product = new Product(name, price, imageRes);
+            CartManager.getInstance().addToCart(product);
+
             Toast.makeText(this, name + " đã được thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
         });
 
@@ -43,5 +47,30 @@ public class DetailActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
+
+        // Xử lý logic của nút tăng giảm số lượng
+        TextView tvQuantity;
+        ImageView btnPlus, btnMinus;
+        quantity = 1;
+
+        tvQuantity = findViewById(R.id.tvQuantity);
+        btnPlus = findViewById(R.id.btnPlus);
+        btnMinus = findViewById(R.id.btnMinus);
+
+        // Tăng số lượng
+        btnPlus.setOnClickListener(v -> {
+            quantity++;
+            tvQuantity.setText(String.valueOf(quantity));
+        });
+
+        // Giảm số lượng
+        btnMinus.setOnClickListener(v -> {
+            if (quantity > 1) {
+                quantity--;
+                tvQuantity.setText(String.valueOf(quantity));
+            }
+        });
+
+
     }
 }
