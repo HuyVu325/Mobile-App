@@ -32,12 +32,8 @@ public class DetailActivity extends AppCompatActivity {
 
         // Xử lý thêm vào giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
-            Product product = new Product(name, price, imageRes);
-            CartManager.getInstance().addToCart(product);
-
             Toast.makeText(this, name + " đã được thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
         });
-
 
         // Xử lý nút back
         ImageView btnBack = findViewById(R.id.btnBack);
