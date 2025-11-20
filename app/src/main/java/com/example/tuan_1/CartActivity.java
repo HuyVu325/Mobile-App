@@ -16,9 +16,9 @@ import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity {
 
-    LinearLayout cartContainer;
-    LinearLayout homeButton;
-    TextView totalPriceTextView; // hiển thị tổng tiền
+    private LinearLayout cartContainer;
+    private LinearLayout homeButton;
+    private TextView totalPriceTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +29,8 @@ public class CartActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.home);
         totalPriceTextView = findViewById(R.id.total_price_textview);
 
-        // Load dữ liệu giỏ hàng
         loadCartItems();
 
-        // Nút quay về Home
         homeButton.setOnClickListener(v -> {
             Intent intent = new Intent(CartActivity.this, HomeActivity.class);
             startActivity(intent);
@@ -42,41 +40,36 @@ public class CartActivity extends AppCompatActivity {
     private void loadCartItems() {
         cartContainer.removeAllViews();
 
-        // reset tổng tiền ban đầu
+        // đặt tổng ban đầu = 0
         totalPriceTextView.setText("Tổng thanh toán: 0đ");
 
         for (Product product : CartManager.getInstance().getCartItems()) {
-
-            // Inflate đúng layout cart_item.xml
             LinearLayout item = (LinearLayout) LayoutInflater.from(this)
                     .inflate(R.layout.cart_item, cartContainer, false);
 
-            // LẤY ĐÚNG ID THEO XML
             CheckBox checkbox = item.findViewById(R.id.checkbox);
             ImageView img = item.findViewById(R.id.product_image);
             TextView name = item.findViewById(R.id.product_name);
             TextView price = item.findViewById(R.id.product_price);
+            TextView quantityText = item.findViewById(R.id.product_quantity);
             Button cancel = item.findViewById(R.id.cancel_button);
 
-            // Gán dữ liệu sản phẩm
             img.setImageResource(product.getImageRes());
             name.setText(product.getName());
-            price.setText("Giá: " + product.getPrice());
 
-            // Xử lý checkbox
-            checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Hiển thị giá + số lượng
+            price.setText("Giá: " + product.getPrice());
+            quantityText.setText("Số lượng: " + product.getQuantity());
+
+            // Checkbox: khi tick/uncheck → cập nhật tổng
+            checkbox.setOnCheckedChangeListener((btn, isChecked) -> {
                 updateTotalPrice();
             });
 
-            // Xử lý nút Hủy
+            // Hủy sản phẩm
             cancel.setOnClickListener(v -> {
-                // Xóa sản phẩm khỏi danh sách
                 CartManager.getInstance().getCartItems().remove(product);
-
-                // Xóa riêng item này khỏi layout
                 cartContainer.removeView(item);
-
-                // Cập nhật lại tổng tiền
                 updateTotalPrice();
             });
 
@@ -84,25 +77,31 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
-    // Hàm tính tổng tiền các sản phẩm đã tick
     private void updateTotalPrice() {
-        int total = 0;
+        long total = 0;
 
         for (int i = 0; i < cartContainer.getChildCount(); i++) {
             LinearLayout item = (LinearLayout) cartContainer.getChildAt(i);
             CheckBox checkbox = item.findViewById(R.id.checkbox);
             TextView priceView = item.findViewById(R.id.product_price);
+            TextView qtyView = item.findViewById(R.id.product_quantity);
 
             if (checkbox.isChecked()) {
+                // Lấy giá
                 String priceText = priceView.getText().toString()
                         .replace("Giá: ", "")
                         .replace(".", "")
                         .replace("đ", "")
                         .trim();
+                // Lấy số lượng
+                String qtyText = qtyView.getText().toString()
+                        .replace("Số lượng: ", "")
+                        .trim();
 
                 try {
-                    int price = Integer.parseInt(priceText);
-                    total += price;
+                    long price = Long.parseLong(priceText);
+                    int qty = Integer.parseInt(qtyText);
+                    total += price * qty;
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
