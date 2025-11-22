@@ -33,10 +33,12 @@ public class DetailActivity extends AppCompatActivity {
 
         // Xử lý thêm vào giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
-            Product product = new Product(name, price, imageRes);
+            int selectedQuantity = quantity;
+
+            Product product = new Product(name, price, imageRes, selectedQuantity);
             CartManager.getInstance().addToCart(product);
 
-            Toast.makeText(this, name + " đã được thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã thêm " + selectedQuantity + " sản phẩm!", Toast.LENGTH_SHORT).show();
         });
 
         // Xử lý nút back

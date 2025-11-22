@@ -16,8 +16,16 @@ public class CartManager {
         return instance;
     }
 
-    public void addToCart(Product product) {
-        cartList.add(product);
+    public void addToCart(Product newProduct) {
+        for (Product p : cartList) {
+            if (p.getName().equals(newProduct.getName())) {
+                // nếu trùng tên → cộng dồn số lượng
+                p.setQuantity(p.getQuantity() + newProduct.getQuantity());
+                return;
+            }
+        }
+        // nếu chưa có → thêm mới
+        cartList.add(newProduct);
     }
 
     public List<Product> getCartItems() {
