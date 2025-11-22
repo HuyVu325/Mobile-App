@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788148064956",
+    "project_id": "mobile-app-gk-fede1",
+    "storage_bucket": "mobile-app-gk-fede1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788148064956:android:6513b7a9608b950c20f6b9",
+        "android_client_info": {
+          "package_name": "com.example.tuan_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvGjXVNK9AbWkea0kmBgPPhX9QaZ3wWE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

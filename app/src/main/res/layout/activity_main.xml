@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginBottom="12dp"
-            android:hint="Tài khoản"
+            android:hint="Email"
             android:inputType="textEmailAddress"
             android:autofillHints="username"
             android:imeOptions="actionNext"/>

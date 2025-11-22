@@ -6,56 +6,80 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.content.Intent;
 import android.widget.Toast;
-import android.content.SharedPreferences;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText edtUsername, edtPassword;
-    private Button btnLogin,btnRegister;
-    private DBHelper dbHelper;
+    private Button btnLogin, btnRegister;
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dbHelper = new DBHelper(this);
+        mAuth = FirebaseAuth.getInstance();
 
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // dang nhap
+        // ĐĂNG NHẬP
         btnLogin.setOnClickListener(v -> {
-            String user = edtUsername.getText().toString().trim();
-            String pass = edtPassword.getText().toString().trim();
+            String email = edtUsername.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
 
-            if (user.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, "Không được để trống!", Toast.LENGTH_SHORT).show();
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (dbHelper.checkLogin(user, pass)) {
-                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-
-                // Lưu lại username đang đăng nhập (để lát nữa xem thông tin)
-                SharedPreferences prefs = getSharedPreferences("user_session", MODE_PRIVATE);
-                prefs.edit().putString("current_user", user).apply();
-
-                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+            if (password.length() < 6) {
+                Toast.makeText(MainActivity.this, "Mật khẩu phải từ 6 ký tự trở lên", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(MainActivity.this, task -> {
+                        if (task.isSuccessful()) {
+                            // Đăng nhập OK
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+
+                            // Chuyển sang màn hình khác (ví dụ HomeActivity)
+                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish(); // không cho quay lại màn login
+                        } else {
+                            // Lỗi
+                            Toast.makeText(MainActivity.this,
+                                    "Đăng nhập thất bại: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
-        // chuyen sang trang dang ky
+        // CHUYỂN SANG TRANG ĐĂNG KÝ
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
     }
+
+    /*@Override
+    protected void onStart() {
+        super.onStart();
+        // Nếu đã đăng nhập rồi thì cho vào thẳng HomeActivity
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }*/
 }

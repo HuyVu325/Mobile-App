@@ -47,7 +47,6 @@ public class DetailActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(DetailActivity.this, HomeActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
 
         // Xử lý logic của nút tăng giảm số lượng
