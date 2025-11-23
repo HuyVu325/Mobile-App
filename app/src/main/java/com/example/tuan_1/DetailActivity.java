@@ -103,10 +103,71 @@ public class DetailActivity extends AppCompatActivity {
 
         // TODO: sau này thay bằng add vào CartManager / Firestore giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Đã thêm " + quantity + " " + name + " vào giỏ (demo)",
-                    Toast.LENGTH_SHORT).show();
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user == null) {
+                Toast.makeText(this, "Bạn cần đăng nhập để thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String uid = user.getUid();
+
+            // 1) Tìm xem productId đã tồn tại trong giỏ chưa
+            db.collection("users")
+                    .document(uid)
+                    .collection("cart")
+                    .whereEqualTo("productId", productId)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+
+                        // Nếu sản phẩm đã có → tăng quantity
+                        if (!querySnapshot.isEmpty()) {
+                            // lấy document đầu tiên
+                            String docId = querySnapshot.getDocuments().get(0).getId();
+                            Long oldQuantity = querySnapshot.getDocuments().get(0).getLong("quantity");
+
+                            if (oldQuantity == null) oldQuantity = 0L;
+
+                            long newQuantity = oldQuantity + quantity;
+
+                            db.collection("users")
+                                    .document(uid)
+                                    .collection("cart")
+                                    .document(docId)
+                                    .update("quantity", newQuantity)
+                                    .addOnSuccessListener(a -> {
+                                        Toast.makeText(this, "Đã cập nhật số lượng trong giỏ hàng!", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+
+                        } else {
+                            // Nếu chưa có → thêm mới
+                            Map<String, Object> cartItem = new HashMap<>();
+                            cartItem.put("productId", productId);
+                            cartItem.put("name", name);
+                            cartItem.put("imageUrl", imageUrl);
+                            cartItem.put("price", price);
+                            cartItem.put("quantity", quantity);
+                            cartItem.put("createdAt", FieldValue.serverTimestamp());
+
+                            db.collection("users")
+                                    .document(uid)
+                                    .collection("cart")
+                                    .add(cartItem)
+                                    .addOnSuccessListener(doc -> {
+                                        Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Lỗi thêm mới: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Lỗi truy vấn: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
+
+
 
         // Gửi đánh giá
         btnSubmitReview.setOnClickListener(v -> submitReview());
