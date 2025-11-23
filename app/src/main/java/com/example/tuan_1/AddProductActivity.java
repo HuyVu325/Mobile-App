@@ -25,7 +25,7 @@ public class AddProductActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 100;
 
     private EditText edtName, edtPrice, edtDescription;
-    private ImageView imgPreview;
+    private ImageView imgPreview, btnBackAdd;
     private Button btnChooseImage, btnSaveProduct;
 
     private Uri imageUri;
@@ -46,6 +46,12 @@ public class AddProductActivity extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreview);
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnSaveProduct = findViewById(R.id.btnSaveProduct);
+        btnBackAdd = findViewById(R.id.btnBackAdd);
+
+        btnBackAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(AddProductActivity.this, AdminActivity.class);
+            startActivity(intent);
+        });
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference("product_images");

@@ -2,7 +2,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="#F5F5F5">
 
     <LinearLayout
@@ -10,64 +9,92 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thêm sản phẩm"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Tên sản phẩm -->
-        <EditText
-            android:id="@+id/edtName"
+        <!-- Thanh tiêu đề + nút Back -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên sản phẩm"
-            android:layout_marginBottom="12dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#4CAF50"
+            android:padding="8dp">
 
-        <!-- Giá sản phẩm -->
-        <EditText
-            android:id="@+id/edtPrice"
+            <ImageView
+                android:id="@+id/btnBackAdd"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/back"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thêm sản phẩm"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <!-- Nội dung form -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Giá (vd: 15000)"
-            android:inputType="number"
-            android:layout_marginBottom="12dp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Mô tả -->
-        <EditText
-            android:id="@+id/edtDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Mô tả sản phẩm"
-            android:minLines="3"
-            android:gravity="top"
-            android:layout_marginBottom="12dp" />
+            <!-- Tên sản phẩm -->
+            <EditText
+                android:id="@+id/edtName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tên sản phẩm"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Ảnh preview -->
-        <ImageView
-            android:id="@+id/imgPreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="#DDDDDD"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="12dp" />
+            <!-- Giá sản phẩm -->
+            <EditText
+                android:id="@+id/edtPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Giá (vd: 15000)"
+                android:inputType="number"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Chọn ảnh -->
-        <Button
-            android:id="@+id/btnChooseImage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Chọn ảnh"
-            android:layout_marginBottom="12dp" />
+            <!-- Mô tả (có thể bỏ trống) -->
+            <EditText
+                android:id="@+id/edtDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mô tả sản phẩm (có thể bỏ trống)"
+                android:minLines="3"
+                android:gravity="top"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Lưu -->
-        <Button
-            android:id="@+id/btnSaveProduct"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lưu sản phẩm" />
+            <!-- Ảnh preview -->
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#DDDDDD"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Nút chọn ảnh -->
+            <Button
+                android:id="@+id/btnChooseImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chọn ảnh"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Nút lưu -->
+            <Button
+                android:id="@+id/btnSaveProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lưu sản phẩm"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
