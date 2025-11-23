@@ -1,6 +1,4 @@
-package com.example.tuan_1;
-
-import android.content.Intent;
+package com.example.tuan_1;import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.Button;
@@ -10,7 +8,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore; // Make sure this is imported
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -20,10 +24,16 @@ public class CartActivity extends AppCompatActivity {
     private LinearLayout homeButton, profile;
     private TextView totalPriceTextView;
 
+    // 1. Declare FirebaseFirestore instance variable
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cart);
+
+        // 2. Initialize the FirebaseFirestore instance
+        db = FirebaseFirestore.getInstance();
 
         cartContainer = findViewById(R.id.cartContainer);
         homeButton = findViewById(R.id.home);
@@ -45,44 +55,68 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void loadCartItems() {
-        cartContainer.removeAllViews();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
 
-        // đặt tổng ban đầu = 0
-        totalPriceTextView.setText("Tổng thanh toán: 0đ");
+        String uid = user.getUid();
 
-        for (Product product : CartManager.getInstance().getCartItems()) {
-            LinearLayout item = (LinearLayout) LayoutInflater.from(this)
-                    .inflate(R.layout.cart_item, cartContainer, false);
+        db.collection("users")
+                .document(uid)
+                .collection("cart")
+                .get()
+                .addOnSuccessListener(query -> {
+                    cartContainer.removeAllViews();
+                    totalPriceTextView.setText("Tổng thanh toán: 0đ");
 
-            CheckBox checkbox = item.findViewById(R.id.checkbox);
-            ImageView img = item.findViewById(R.id.product_image);
-            TextView name = item.findViewById(R.id.product_name);
-            TextView price = item.findViewById(R.id.product_price);
-            TextView quantityText = item.findViewById(R.id.product_quantity);
-            Button cancel = item.findViewById(R.id.cancel_button);
+                    for (QueryDocumentSnapshot doc : query) {
 
-            img.setImageResource(product.getImageRes());
-            name.setText(product.getName());
+                        String docId = doc.getId();  // 🔥 Cần ID để xoá
+                        String name = doc.getString("name");
+                        String price = doc.getString("price");
+                        String imageUrl = doc.getString("imageUrl");
+                        Long quantity = doc.getLong("quantity");
 
-            // Hiển thị giá + số lượng
-            price.setText("Giá: " + product.getPrice());
-            quantityText.setText("Số lượng: " + product.getQuantity());
+                        LinearLayout item = (LinearLayout) LayoutInflater.from(this)
+                                .inflate(R.layout.cart_item, cartContainer, false);
 
-            // Checkbox: khi tick/uncheck → cập nhật tổng
-            checkbox.setOnCheckedChangeListener((btn, isChecked) -> {
-                updateTotalPrice();
-            });
+                        ImageView img = item.findViewById(R.id.product_image);
+                        TextView nameTv = item.findViewById(R.id.product_name);
+                        TextView priceTv = item.findViewById(R.id.product_price);
+                        TextView qtyTv = item.findViewById(R.id.product_quantity);
+                        CheckBox checkbox = item.findViewById(R.id.checkbox);
+                        Button btnRemove = item.findViewById(R.id.cancel_button);   // 🔥 nút hủy
 
-            // Hủy sản phẩm
-            cancel.setOnClickListener(v -> {
-                CartManager.getInstance().getCartItems().remove(product);
-                cartContainer.removeView(item);
-                updateTotalPrice();
-            });
+                        Glide.with(this).load(imageUrl).into(img);
 
-            cartContainer.addView(item);
-        }
+                        nameTv.setText(name);
+                        priceTv.setText("Giá: " + price);
+                        qtyTv.setText("Số lượng: " + (quantity != null ? quantity : 0));
+
+                        checkbox.setOnCheckedChangeListener((btn, isChecked) -> updateTotalPrice());
+
+                        // 🔥 Xử lý nút Hủy (xóa khỏi Firestore + UI)
+                        btnRemove.setOnClickListener(v -> {
+                            db.collection("users")
+                                    .document(uid)
+                                    .collection("cart")
+                                    .document(docId)
+                                    .delete()
+                                    .addOnSuccessListener(a -> {
+                                        cartContainer.removeView(item);  // 🔥 Xóa khỏi UI
+                                        updateTotalPrice();              // Cập nhật lại tiền
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        e.printStackTrace();
+                                    });
+                        });
+
+                        cartContainer.addView(item);
+                    }
+
+                    updateTotalPrice();
+                });
     }
+
 
     private void updateTotalPrice() {
         long total = 0;
@@ -110,6 +144,7 @@ public class CartActivity extends AppCompatActivity {
                     int qty = Integer.parseInt(qtyText);
                     total += price * qty;
                 } catch (NumberFormatException e) {
+                    // Log the error for debugging
                     e.printStackTrace();
                 }
             }
