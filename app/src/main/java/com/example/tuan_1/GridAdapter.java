@@ -8,27 +8,37 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GridAdapter extends BaseAdapter {
-    private final Context context;
-    private final String[] items;
-    private final int[] images;
-    private final String[] prices;
+import com.bumptech.glide.Glide;
 
-    public GridAdapter(Context context, String[] items, int[] images, String[] prices) {
+import java.util.List;
+
+public class GridAdapter extends BaseAdapter {
+
+    private Context context;
+    private List<String> names;
+    private List<String> prices;
+    private List<String> imageUrls;
+    private LayoutInflater inflater;
+
+    public GridAdapter(Context context,
+                       List<String> names,
+                       List<String> imageUrls,
+                       List<String> prices) {
         this.context = context;
-        this.items = items;
-        this.images = images;
+        this.names = names;
         this.prices = prices;
+        this.imageUrls = imageUrls;
+        this.inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return items.length;
+        return names.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return items[position];
+        return names.get(position);
     }
 
     @Override
@@ -36,23 +46,33 @@ public class GridAdapter extends BaseAdapter {
         return position;
     }
 
-    public String getPrice(int position) { return prices[position]; }
-
-    public String[] getPrices() { return prices; }
+    static class ViewHolder {
+        ImageView imageView;
+        TextView txtName, txtPrice;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder h;
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
+            convertView = inflater.inflate(R.layout.grid_item, parent, false);
+            h = new ViewHolder();
+            h.imageView = convertView.findViewById(R.id.gridImage);
+            h.txtName = convertView.findViewById(R.id.gridText);
+            h.txtPrice = convertView.findViewById(R.id.gridPrice);
+            convertView.setTag(h);
+        } else {
+            h = (ViewHolder) convertView.getTag();
         }
 
-        ImageView imageView = convertView.findViewById(R.id.gridImage);
-        TextView textView = convertView.findViewById(R.id.gridText);
-        TextView priceView = convertView.findViewById(R.id.gridPrice);
+        h.txtName.setText(names.get(position));
+        h.txtPrice.setText(prices.get(position));
 
-        imageView.setImageResource(images[position]);
-        textView.setText(items[position]);
-        priceView.setText(prices[position]);
+        Glide.with(context)
+                .load(imageUrls.get(position))
+                .placeholder(R.drawable.shop)
+                .error(R.drawable.shop)
+                .into(h.imageView);
 
         return convertView;
     }

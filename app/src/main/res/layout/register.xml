@@ -48,6 +48,14 @@
             android:id="@+id/edtUsername"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:hint="Tên hiển thị"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:hint="Email"
             android:inputType="textPersonName"
             android:layout_marginBottom="12dp"/>
@@ -81,22 +89,22 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <Button
-            android:id="@+id/btnBack"
+            android:id="@+id/btnRegister"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Quay lại"/>
+            android:text="Đăng ký"/>
 
         <View
             android:layout_width="16dp"
             android:layout_height="0dp"/>
 
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnBack"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Đăng ký"/>
+            android:text="Quay lại"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,6 +16,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CartActivity" />
         <activity android:name=".DetailActivity" />
+        <activity android:name=".AddProductActivity" />
+        <activity android:name=".AdminActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
