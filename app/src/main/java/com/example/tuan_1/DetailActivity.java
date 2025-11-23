@@ -26,7 +26,7 @@ import java.util.Map;
 public class DetailActivity extends AppCompatActivity {
 
     private ImageView imgProduct, btnBack, btnMinus, btnPlus;
-    private TextView tvName, tvPrice, tvQuantity, tvRatingCount;
+    private TextView tvName, tvPrice, tvQuantity, tvRatingCount, tvDescription;
     private Button btnAddToCart, btnSubmitReview;
     private RatingBar ratingUser, ratingAverage;
     private EditText edtComment;
@@ -55,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
         tvPrice = findViewById(R.id.tvPrice);
         tvQuantity = findViewById(R.id.tvQuantity);
+        tvDescription = findViewById(R.id.tvDescription); // 👈 thêm
         btnAddToCart = findViewById(R.id.btnAddToCart);
 
         ratingUser = findViewById(R.id.ratingUser);
@@ -79,6 +80,13 @@ public class DetailActivity extends AppCompatActivity {
         tvName.setText(name != null ? name : "");
         tvPrice.setText(price != null ? price : "");
 
+        // Hiển thị mô tả
+        if (desc != null && !desc.trim().isEmpty()) {
+            tvDescription.setText(desc);
+        } else {
+            tvDescription.setText("Chưa có mô tả cho sản phẩm này.");
+        }
+
         Glide.with(this)
                 .load(imageUrl)
                 .placeholder(R.drawable.shop)
@@ -101,7 +109,7 @@ public class DetailActivity extends AppCompatActivity {
             tvQuantity.setText(String.valueOf(quantity));
         });
 
-        // TODO: sau này thay bằng add vào CartManager / Firestore giỏ hàng
+        // Thêm vào giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
             FirebaseUser user = mAuth.getCurrentUser();
             if (user == null) {
@@ -111,7 +119,6 @@ public class DetailActivity extends AppCompatActivity {
 
             String uid = user.getUid();
 
-            // 1) Tìm xem productId đã tồn tại trong giỏ chưa
             db.collection("users")
                     .document(uid)
                     .collection("cart")
@@ -119,14 +126,10 @@ public class DetailActivity extends AppCompatActivity {
                     .get()
                     .addOnSuccessListener(querySnapshot -> {
 
-                        // Nếu sản phẩm đã có → tăng quantity
                         if (!querySnapshot.isEmpty()) {
-                            // lấy document đầu tiên
                             String docId = querySnapshot.getDocuments().get(0).getId();
                             Long oldQuantity = querySnapshot.getDocuments().get(0).getLong("quantity");
-
                             if (oldQuantity == null) oldQuantity = 0L;
-
                             long newQuantity = oldQuantity + quantity;
 
                             db.collection("users")
@@ -134,15 +137,11 @@ public class DetailActivity extends AppCompatActivity {
                                     .collection("cart")
                                     .document(docId)
                                     .update("quantity", newQuantity)
-                                    .addOnSuccessListener(a -> {
-                                        Toast.makeText(this, "Đã cập nhật số lượng trong giỏ hàng!", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-
+                                    .addOnSuccessListener(a ->
+                                            Toast.makeText(this, "Đã cập nhật số lượng trong giỏ hàng!", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                         } else {
-                            // Nếu chưa có → thêm mới
                             Map<String, Object> cartItem = new HashMap<>();
                             cartItem.put("productId", productId);
                             cartItem.put("name", name);
@@ -155,19 +154,15 @@ public class DetailActivity extends AppCompatActivity {
                                     .document(uid)
                                     .collection("cart")
                                     .add(cartItem)
-                                    .addOnSuccessListener(doc -> {
-                                        Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(this, "Lỗi thêm mới: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
+                                    .addOnSuccessListener(doc ->
+                                            Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(this, "Lỗi thêm mới: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                         }
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(this, "Lỗi truy vấn: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
-
-
 
         // Gửi đánh giá
         btnSubmitReview.setOnClickListener(v -> submitReview());
@@ -205,19 +200,17 @@ public class DetailActivity extends AppCompatActivity {
 
         String uid = user.getUid();
 
-        // Lấy username từ collection "users"
         db.collection("users").document(uid)
                 .get()
                 .addOnSuccessListener(docUser -> {
                     String username = docUser.getString("username");
                     if (username == null || username.isEmpty()) {
-                        // fallback: nếu chưa có username, lấy email
                         username = user.getEmail() != null ? user.getEmail() : "Người dùng";
                     }
 
                     Map<String, Object> review = new HashMap<>();
                     review.put("userId", uid);
-                    review.put("userName", username);  // dùng username, không dùng email
+                    review.put("userName", username);
                     review.put("comment", commentText);
                     review.put("rating", rating);
                     review.put("createdAt", FieldValue.serverTimestamp());
@@ -228,9 +221,9 @@ public class DetailActivity extends AppCompatActivity {
                             .add(review)
                             .addOnSuccessListener(rv -> {
                                 edtComment.setText("");
-                                ratingUser.setRating(0f); // reset rating của user
+                                ratingUser.setRating(0f);
                                 Toast.makeText(this, "Đã gửi đánh giá!", Toast.LENGTH_SHORT).show();
-                                loadReviews(); // load lại danh sách comment
+                                loadReviews();
                             })
                             .addOnFailureListener(e ->
                                     Toast.makeText(this, "Lỗi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show());
@@ -265,7 +258,6 @@ public class DetailActivity extends AppCompatActivity {
                         totalRating += r;
                         count++;
 
-                        // inflate item_comment
                         android.view.View itemView = inflater.inflate(R.layout.item_comment, layoutComments, false);
                         TextView tvUserName = itemView.findViewById(R.id.tvUserName);
                         TextView tvComment = itemView.findViewById(R.id.tvComment);

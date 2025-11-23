@@ -94,22 +94,40 @@ public class UserManagementActivity extends AppCompatActivity {
     }
 
     private void showBanUserDialog(String userId, String username) {
-        new AlertDialog.Builder(this)
-                .setTitle("Khóa tài khoản")
-                .setMessage("Bạn có chắc muốn KHÓA user:\n\"" + username + "\"?\n\n" +
-                        "User bị khóa sẽ không thể đăng nhập vào app nữa.")
-                .setPositiveButton("Khóa", (dialog, which) -> {
-                    db.collection("users")
-                            .document(userId)
-                            .update("isBanned", true)
-                            .addOnSuccessListener(a -> {
-                                Toast.makeText(this, "Đã khóa user", Toast.LENGTH_SHORT).show();
-                                loadUsers(); // load lại để hiện chữ (ĐÃ KHÓA)
+
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(doc -> {
+                    Boolean isBanned = doc.getBoolean("isBanned");
+                    boolean banned = (isBanned != null && isBanned);
+
+                    String action = banned ? "MỞ KHÓA" : "KHÓA";
+                    String message = banned ?
+                            "Bạn có chắc muốn MỞ KHÓA user:\n\"" + username + "\"?\n\n" +
+                                    "User sẽ có thể đăng nhập lại." :
+                            "Bạn có chắc muốn KHÓA user:\n\"" + username + "\"?\n\n" +
+                                    "User sẽ không thể đăng nhập vào app nữa.";
+
+                    new AlertDialog.Builder(this)
+                            .setTitle(action + " tài khoản")
+                            .setMessage(message)
+                            .setPositiveButton(action, (dialog, which) -> {
+
+                                db.collection("users")
+                                        .document(userId)
+                                        .update("isBanned", !banned)
+                                        .addOnSuccessListener(a -> {
+                                            Toast.makeText(this,
+                                                    banned ? "Đã mở khóa user" : "Đã khóa user",
+                                                    Toast.LENGTH_SHORT).show();
+                                            loadUsers(); // load lại UI
+                                        })
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(this,
+                                                        "Lỗi: " + e.getMessage(),
+                                                        Toast.LENGTH_SHORT).show());
                             })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                });
     }
 }
