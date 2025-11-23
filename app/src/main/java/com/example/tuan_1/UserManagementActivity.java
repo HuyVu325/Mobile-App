@@ -1,5 +1,6 @@
 package com.example.tuan_1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,7 +36,10 @@ public class UserManagementActivity extends AppCompatActivity {
         btnBackUser = findViewById(R.id.btnBackUser);
         db = FirebaseFirestore.getInstance();
 
-        btnBackUser.setOnClickListener(v -> onBackPressed());
+        btnBackUser.setOnClickListener(v -> {
+            Intent intent = new Intent(UserManagementActivity.this, AdminActivity.class);
+            startActivity(intent);
+        });
 
         adapter = new SimpleAdapter(
                 this,

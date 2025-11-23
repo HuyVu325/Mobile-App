@@ -22,7 +22,10 @@ public class AdminActivity extends AppCompatActivity {
         btnManageComments = findViewById(R.id.btnManageComments);
         btnBackAdmin = findViewById(R.id.btnBackAdmin);
 
-        btnBackAdmin.setOnClickListener(v -> onBackPressed());
+        btnBackAdmin.setOnClickListener(v -> {
+            startActivity(new Intent(AdminActivity.this, ProfileActivity.class));
+
+        });
 
         btnAddProduct.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, AddProductActivity.class));

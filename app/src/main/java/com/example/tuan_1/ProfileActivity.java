@@ -15,8 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileActivity extends AppCompatActivity {
-
-    private ImageView btnBackProfile;
     private TextView tvUsername, tvEmail;
     private Button btnLogout, btnAdmin;
 
@@ -45,8 +43,6 @@ public class ProfileActivity extends AppCompatActivity {
         navAnnouncement = findViewById(R.id.announcement);
         navProfile = findViewById(R.id.profile);
         layoutUserInfoCard = findViewById(R.id.layoutUserInfoCard);
-
-        btnBackProfile.setOnClickListener(v -> onBackPressed());
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
