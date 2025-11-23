@@ -69,7 +69,7 @@ public class DetailActivity extends AppCompatActivity {
         price = getIntent().getStringExtra("product_price");
         imageUrl = getIntent().getStringExtra("product_image");
         desc = getIntent().getStringExtra("product_desc"); // nếu có
-        productId = getIntent().getStringExtra("product_id"); // RẤT QUAN TRỌNG
+        productId = getIntent().getStringExtra("product_id");
 
         if (productId == null || productId.isEmpty()) {
             Toast.makeText(this, "Thiếu product_id, không thể tải đánh giá", Toast.LENGTH_SHORT).show();
@@ -101,11 +101,11 @@ public class DetailActivity extends AppCompatActivity {
             tvQuantity.setText(String.valueOf(quantity));
         });
 
+        // TODO: sau này thay bằng add vào CartManager / Firestore giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
             Toast.makeText(this,
                     "Đã thêm " + quantity + " " + name + " vào giỏ (demo)",
                     Toast.LENGTH_SHORT).show();
-            // sau này bạn có thể lưu giỏ vào Firestore hoặc SQLite
         });
 
         // Gửi đánh giá
@@ -124,14 +124,14 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         float rating = ratingUser.getRating();
-        String comment = edtComment.getText().toString().trim();
+        String commentText = edtComment.getText().toString().trim();
 
         if (rating <= 0) {
             Toast.makeText(this, "Vui lòng chọn số sao", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (comment.isEmpty()) {
+        if (commentText.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập nhận xét", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -143,28 +143,39 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         String uid = user.getUid();
-        String userName = user.getEmail(); // hoặc lấy từ collection users
 
-        Map<String, Object> review = new HashMap<>();
-        review.put("userId", uid);
-        review.put("userName", userName);
-        review.put("rating", rating);
-        review.put("comment", comment);
-        review.put("createdAt", FieldValue.serverTimestamp());
+        // Lấy username từ collection "users"
+        db.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(docUser -> {
+                    String username = docUser.getString("username");
+                    if (username == null || username.isEmpty()) {
+                        // fallback: nếu chưa có username, lấy email
+                        username = user.getEmail() != null ? user.getEmail() : "Người dùng";
+                    }
 
-        db.collection("products")
-                .document(productId)
-                .collection("reviews")
-                .add(review)
-                .addOnSuccessListener(doc -> {
-                    Toast.makeText(this, "Đã gửi đánh giá", Toast.LENGTH_SHORT).show();
-                    // reset UI
-                    ratingUser.setRating(0f);
-                    edtComment.setText("");
-                    loadReviews();
+                    Map<String, Object> review = new HashMap<>();
+                    review.put("userId", uid);
+                    review.put("userName", username);  // dùng username, không dùng email
+                    review.put("comment", commentText);
+                    review.put("rating", rating);
+                    review.put("createdAt", FieldValue.serverTimestamp());
+
+                    db.collection("products")
+                            .document(productId)
+                            .collection("reviews")
+                            .add(review)
+                            .addOnSuccessListener(rv -> {
+                                edtComment.setText("");
+                                ratingUser.setRating(0f); // reset rating của user
+                                Toast.makeText(this, "Đã gửi đánh giá!", Toast.LENGTH_SHORT).show();
+                                loadReviews(); // load lại danh sách comment
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Lỗi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Lỗi lấy thông tin user: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void loadReviews() {

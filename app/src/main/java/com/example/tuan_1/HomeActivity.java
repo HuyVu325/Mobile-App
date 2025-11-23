@@ -21,12 +21,14 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout CartButton;
     private SearchView searchView;
 
+    // Dữ liệu gốc từ Firestore
     private ArrayList<String> allProductIds = new ArrayList<>();
     private ArrayList<String> allNames = new ArrayList<>();
     private ArrayList<String> allPrices = new ArrayList<>();
     private ArrayList<String> allImageUrls = new ArrayList<>();
     private ArrayList<String> allDescriptions = new ArrayList<>();
 
+    // Dữ liệu đang hiển thị (sau khi lọc)
     private ArrayList<String> productIds = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> prices = new ArrayList<>();
@@ -45,13 +47,16 @@ public class HomeActivity extends AppCompatActivity {
         searchView = findViewById(R.id.searchView);
         CartButton = findViewById(R.id.cart);
 
+        // Tải sản phẩm từ Firestore
         loadProductsFromFirestore();
 
+        // Mở giỏ hàng
         CartButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, CartActivity.class);
             startActivity(intent);
         });
 
+        // Khi bấm vào 1 sản phẩm
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
             intent.putExtra("product_id", productIds.get(position));
@@ -62,6 +67,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Search
         setupSearch();
     }
 
@@ -93,6 +99,7 @@ public class HomeActivity extends AppCompatActivity {
                         allImageUrls.add(imageUrl);
                         allDescriptions.add(desc);
                     }
+                    // ban đầu hiển thị tất cả
                     applyFilter("");
                 })
                 .addOnFailureListener(e ->
@@ -100,6 +107,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupSearch() {
+        // cho search luôn mở
+        searchView.setIconifiedByDefault(false);
+        searchView.clearFocus();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -116,7 +127,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void applyFilter(String query) {
-        String q = query == null ? "" : query.toLowerCase().trim();
+        String q = (query == null ? "" : query.toLowerCase().trim());
 
         productIds.clear();
         names.clear();
@@ -125,8 +136,11 @@ public class HomeActivity extends AppCompatActivity {
         descriptions.clear();
 
         for (int i = 0; i < allNames.size(); i++) {
-            String name = allNames.get(i);
-            if (q.isEmpty() || name.toLowerCase().contains(q)) {
+            String name = allNames.get(i).toLowerCase();
+            String desc = allDescriptions.get(i).toLowerCase();
+
+            // lọc theo tên hoặc mô tả, bạn muốn chỉ tên thì bỏ "|| desc.contains(q)"
+            if (q.isEmpty() || name.contains(q) || desc.contains(q)) {
                 productIds.add(allProductIds.get(i));
                 names.add(allNames.get(i));
                 prices.add(allPrices.get(i));
@@ -135,6 +149,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
+        // tạo adapter mới mỗi lần lọc (đơn giản, không cần updateData)
         adapter = new GridAdapter(this, names, imageUrls, prices);
         gridView.setAdapter(adapter);
     }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,24 +17,27 @@ public class MainActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // layout login của bạn
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // LOGIN
+        // ĐĂNG NHẬP
         btnLogin.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
 
+            //Admin
             if (email.equals("admin") && password.equals("admin"))
             {
                 Intent intent = new Intent(MainActivity.this, AdminActivity.class);
@@ -55,24 +59,59 @@ public class MainActivity extends AppCompatActivity {
                     .addOnCompleteListener(MainActivity.this, task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(MainActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                            if (user == null) {
+                                Toast.makeText(MainActivity.this, "Lỗi: không lấy được thông tin user", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
-                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+                            String uid = user.getUid();
+
+                            // Kiểm tra user có bị BAN không
+                            db.collection("users").document(uid)
+                                    .get()
+                                    .addOnSuccessListener(doc -> {
+                                        if (!doc.exists()) {
+                                            // nếu chưa có document users -> cho vào app bình thường
+                                            goToHome();
+                                            return;
+                                        }
+
+                                        Boolean banned = doc.getBoolean("isBanned");
+                                        if (banned != null && banned) {
+                                            Toast.makeText(MainActivity.this,
+                                                    "Tài khoản của bạn đã bị khóa bởi Admin!",
+                                                    Toast.LENGTH_LONG).show();
+                                            mAuth.signOut();
+                                        } else {
+                                            goToHome();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(MainActivity.this,
+                                                "Lỗi kiểm tra trạng thái tài khoản: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                        // tùy bạn: có thể vẫn cho vào app hoặc không
+                                        // goToHome();
+                                    });
+
                         } else {
                             Toast.makeText(MainActivity.this,
                                     "Đăng nhập thất bại: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                         }
                     });
-
         });
 
-        // Sang trang đăng ký
+        // CHUYỂN SANG TRANG ĐĂNG KÝ
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void goToHome() {
+        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
