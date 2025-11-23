@@ -21,12 +21,13 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout CartButton;
     private SearchView searchView;
 
+    private ArrayList<String> allProductIds = new ArrayList<>();
     private ArrayList<String> allNames = new ArrayList<>();
     private ArrayList<String> allPrices = new ArrayList<>();
     private ArrayList<String> allImageUrls = new ArrayList<>();
     private ArrayList<String> allDescriptions = new ArrayList<>();
 
-    // danh sách đang hiển thị (sau filter)
+    private ArrayList<String> productIds = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> prices = new ArrayList<>();
     private ArrayList<String> imageUrls = new ArrayList<>();
@@ -53,6 +54,7 @@ public class HomeActivity extends AppCompatActivity {
 
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+            intent.putExtra("product_id", productIds.get(position));
             intent.putExtra("product_name", names.get(position));
             intent.putExtra("product_price", prices.get(position));
             intent.putExtra("product_image", imageUrls.get(position));
@@ -67,12 +69,14 @@ public class HomeActivity extends AppCompatActivity {
         db.collection("products")
                 .get()
                 .addOnSuccessListener(q -> {
+                    allProductIds.clear();
                     allNames.clear();
                     allPrices.clear();
                     allImageUrls.clear();
                     allDescriptions.clear();
 
                     for (QueryDocumentSnapshot doc : q) {
+                        String id = doc.getId();
                         String name = doc.getString("name");
                         Double price = doc.getDouble("price");
                         String imageUrl = doc.getString("imageUrl");
@@ -83,12 +87,12 @@ public class HomeActivity extends AppCompatActivity {
                         if (desc == null) desc = "";
                         String priceText = (price != null ? price : 0) + "đ";
 
+                        allProductIds.add(id);
                         allNames.add(name);
                         allPrices.add(priceText);
                         allImageUrls.add(imageUrl);
                         allDescriptions.add(desc);
                     }
-
                     applyFilter("");
                 })
                 .addOnFailureListener(e ->
@@ -114,6 +118,7 @@ public class HomeActivity extends AppCompatActivity {
     private void applyFilter(String query) {
         String q = query == null ? "" : query.toLowerCase().trim();
 
+        productIds.clear();
         names.clear();
         prices.clear();
         imageUrls.clear();
@@ -122,6 +127,7 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < allNames.size(); i++) {
             String name = allNames.get(i);
             if (q.isEmpty() || name.toLowerCase().contains(q)) {
+                productIds.add(allProductIds.get(i));
                 names.add(allNames.get(i));
                 prices.add(allPrices.get(i));
                 imageUrls.add(allImageUrls.get(i));
