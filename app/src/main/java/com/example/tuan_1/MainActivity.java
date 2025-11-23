@@ -37,14 +37,6 @@ public class MainActivity extends AppCompatActivity {
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
 
-            //Admin
-            if (email.equals("admin") && password.equals("admin"))
-            {
-                Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-                startActivity(intent);
-                finish();
-            }
-
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
                 return;

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#FF5722"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/btnBackEditProfile"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/back"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa thông tin"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <!-- Nội dung -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email (không chỉnh sửa)"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvEmailEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="email@example.com"
+                android:textSize="14sp"
+                android:textColor="#616161"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edtUsernameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nhập username"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Số điện thoại"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edtPhoneEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nhập số điện thoại"
+                android:inputType="phone"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edtAddressEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nhập địa chỉ"
+                android:minLines="2"
+                android:gravity="top"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnSaveEditProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lưu thay đổi"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white"
+                android:padding="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

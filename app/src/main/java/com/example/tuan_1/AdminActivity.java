@@ -3,12 +3,14 @@ package com.example.tuan_1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminActivity extends AppCompatActivity {
 
     private Button btnAddProduct, btnManageUsers, btnManageComments;
+    private ImageView btnBackAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +20,9 @@ public class AdminActivity extends AppCompatActivity {
         btnAddProduct = findViewById(R.id.btnAddProduct);
         btnManageUsers = findViewById(R.id.btnManageUsers);
         btnManageComments = findViewById(R.id.btnManageComments);
+        btnBackAdmin = findViewById(R.id.btnBackAdmin);
+
+        btnBackAdmin.setOnClickListener(v -> onBackPressed());
 
         btnAddProduct.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, AddProductActivity.class));

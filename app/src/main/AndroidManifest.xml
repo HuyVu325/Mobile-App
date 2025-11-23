@@ -20,6 +20,8 @@
         <activity android:name=".AdminActivity" />
         <activity android:name=".UserManagementActivity" />
         <activity android:name=".CommentManagementActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".EditProfileActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

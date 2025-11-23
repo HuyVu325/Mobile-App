@@ -17,7 +17,7 @@ import java.util.Locale;
 public class CartActivity extends AppCompatActivity {
 
     private LinearLayout cartContainer;
-    private LinearLayout homeButton;
+    private LinearLayout homeButton, profile;
     private TextView totalPriceTextView;
 
     @Override
@@ -28,6 +28,13 @@ public class CartActivity extends AppCompatActivity {
         cartContainer = findViewById(R.id.cartContainer);
         homeButton = findViewById(R.id.home);
         totalPriceTextView = findViewById(R.id.total_price_textview);
+        profile = findViewById(R.id.profile);
+
+        // Chuyen qua trang Toi
+        profile.setOnClickListener(v -> {
+            Intent intent = new Intent(CartActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
 
         loadCartItems();
 
