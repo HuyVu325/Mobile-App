@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="16dp"
-            android:text="Tổng thanh toán: 150.000đ"
+            android:text="Tổng thanh toán: 0đ"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- TITLE -->
+        <TextView
+            android:text="Thông tin giao hàng"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- NAME -->
+        <EditText
+            android:id="@+id/edtName"
+            android:hint="Tên người nhận"
+            android:padding="14dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edittext_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- VOUCHER -->
+        <EditText
+            android:id="@+id/edtVoucher"
+            android:hint="Mã giảm giá"
+            android:padding="14dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edittext_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- NOTE -->
+        <EditText
+            android:id="@+id/edtNote"
+            android:hint="Lời nhắn cho shipper"
+            android:padding="14dp"
+            android:minLines="3"
+            android:maxLines="5"
+            android:gravity="top"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/edittext_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvTotalPrice"
+            android:text="0đ"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FF5722"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <!-- BUTTONS -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnConfirm"
+                android:text="Xác nhận"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FF5722"/>
+
+            <Button
+                android:id="@+id/btnBack"
+                android:text="Quay lại"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#FF5722"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
