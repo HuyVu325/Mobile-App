@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CartActivity">
+    tools:context=".NotificationActivity">  <!-- Đổi context sang NotificationActivity nếu cần -->
 
     <LinearLayout
         android:id="@+id/layoutTitle"
@@ -23,63 +23,47 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Giỏ hàng"
+            android:text="Thông báo"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Khu vực hiển thị danh sách các thông báo -->
     <ScrollView
-        android:id="@+id/cart_items_scrollview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/checkout_section"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTitle"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutTitle">
-
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:id="@+id/cartContainer"
+            android:id="@+id/notificationContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
+
+<!--            &lt;!&ndash;-->
+<!--            LƯU Ý QUAN TRỌNG:-->
+<!--            Các dòng <include> dưới đây chỉ dùng để xem trước giao diện.-->
+<!--            Khi lập trình trong file Java/Kotlin, bạn sẽ xóa chúng đi-->
+<!--            và thêm các item vào LinearLayout (notificationContainer) này một cách tự động.-->
+<!--            &ndash;&gt;-->
+
+<!--            &lt;!&ndash; Ví dụ hiển thị một item thông báo &ndash;&gt;-->
+<!--            <include layout="@layout/notification_item" />-->
+
+<!--            &lt;!&ndash; Ví dụ hiển thị item thứ hai &ndash;&gt;-->
+<!--            <include layout="@layout/notification_item" />-->
+
+<!--            &lt;!&ndash; Ví dụ hiển thị item thứ ba &ndash;&gt;-->
+<!--            <include layout="@layout/notification_item" />-->
+
         </LinearLayout>
 
     </ScrollView>
-
-<!--Tong thanh toan va nut mua hang-->
-    <LinearLayout
-        android:id="@+id/checkout_section"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#FF5722"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/total_price_textview"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="16dp"
-            android:text="Tổng thanh toán: 0đ"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/buy_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="#ff3f03"
-            android:textColor="@android:color/white"
-            android:text="Mua Hàng" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottom_nav"

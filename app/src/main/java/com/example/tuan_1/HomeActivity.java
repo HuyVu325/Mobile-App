@@ -18,7 +18,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private GridView gridView;
-    private LinearLayout CartButton, profile;
+    private LinearLayout CartButton, profile, notification;
     private SearchView searchView;
 
     // Dữ liệu gốc từ Firestore
@@ -47,12 +47,19 @@ public class HomeActivity extends AppCompatActivity {
         searchView = findViewById(R.id.searchView);
         CartButton = findViewById(R.id.cart);
         profile = findViewById(R.id.profile);
+        notification = findViewById(R.id.announcement);
 
         // Chuyen qua trang Toi
         profile.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
+
+        // Nút Thông báo: Chuyển đến NotificationActivity
+        notification.setOnClickListener(v -> {
+                    Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                });
 
         // Tải sản phẩm từ Firestore
         loadProductsFromFirestore();
