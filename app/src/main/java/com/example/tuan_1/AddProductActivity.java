@@ -6,9 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +31,7 @@ public class AddProductActivity extends AppCompatActivity {
     private EditText edtName, edtPrice, edtDescription;
     private ImageView imgPreview, btnBackAdd;
     private Button btnChooseImage, btnSaveProduct;
+    private Spinner spinnerCategory;
 
     private Uri imageUri;
 
@@ -34,6 +39,9 @@ public class AddProductActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    // fruit / vegetable
+    private String selectedCategory = "fruit";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +55,39 @@ public class AddProductActivity extends AppCompatActivity {
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnSaveProduct = findViewById(R.id.btnSaveProduct);
         btnBackAdd = findViewById(R.id.btnBackAdd);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
 
         btnBackAdd.setOnClickListener(v -> {
             Intent intent = new Intent(AddProductActivity.this, AdminActivity.class);
             startActivity(intent);
         });
 
+        // Firebase
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference("product_images");
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
+        // Spinner category: Fruit / Vegetable (hiển thị) -> fruit / vegetable (lưu DB)
+        String[] display = {"Fruit", "Vegetable"};
+        ArrayAdapter<String> adapterCategory = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                display
+        );
+        adapterCategory.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapterCategory);
+
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) selectedCategory = "fruit";
+                else selectedCategory = "vegetable";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
 
         btnChooseImage.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -122,6 +153,7 @@ public class AddProductActivity extends AppCompatActivity {
                             product.put("imageUrl", imageUrl);
                             product.put("ownerId", uid);
                             product.put("createdAt", FieldValue.serverTimestamp());
+                            product.put("category", selectedCategory); // ⭐ fruit / vegetable
 
                             db.collection("products")
                                     .add(product)

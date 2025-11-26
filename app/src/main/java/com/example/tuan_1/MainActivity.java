@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // layout login của bạn
+        setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -56,35 +56,8 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             }
 
-                            String uid = user.getUid();
-
-                            // Kiểm tra user có bị BAN không
-                            db.collection("users").document(uid)
-                                    .get()
-                                    .addOnSuccessListener(doc -> {
-                                        if (!doc.exists()) {
-                                            // nếu chưa có document users -> cho vào app bình thường
-                                            goToHome();
-                                            return;
-                                        }
-
-                                        Boolean banned = doc.getBoolean("isBanned");
-                                        if (banned != null && banned) {
-                                            Toast.makeText(MainActivity.this,
-                                                    "Tài khoản của bạn đã bị khóa bởi Admin!",
-                                                    Toast.LENGTH_LONG).show();
-                                            mAuth.signOut();
-                                        } else {
-                                            goToHome();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(MainActivity.this,
-                                                "Lỗi kiểm tra trạng thái tài khoản: " + e.getMessage(),
-                                                Toast.LENGTH_SHORT).show();
-                                        // tùy bạn: có thể vẫn cho vào app hoặc không
-                                        // goToHome();
-                                    });
+                            // sau khi login xong cũng kiểm tra BAN rồi mới cho vào home
+                            checkBannedAndGo(user);
 
                         } else {
                             Toast.makeText(MainActivity.this,
@@ -101,9 +74,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 👉 HÀM GIỮ TRẠNG THÁI ĐĂNG NHẬP
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // user đã đăng nhập trước đó -> kiểm tra BAN rồi vào Home
+            checkBannedAndGo(currentUser);
+        }
+        // nếu currentUser == null thì để user ở lại màn login bình thường
+    }
+
+    // Hàm dùng chung: kiểm tra bị BAN hay không
+    private void checkBannedAndGo(FirebaseUser user) {
+        String uid = user.getUid();
+
+        db.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        // nếu chưa có document users -> cho vào app bình thường
+                        goToHome();
+                        return;
+                    }
+
+                    Boolean banned = doc.getBoolean("isBanned");
+                    if (banned != null && banned) {
+                        Toast.makeText(MainActivity.this,
+                                "Tài khoản của bạn đã bị khóa bởi Admin!",
+                                Toast.LENGTH_LONG).show();
+                        mAuth.signOut();
+                    } else {
+                        goToHome();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(MainActivity.this,
+                            "Lỗi kiểm tra trạng thái tài khoản: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void goToHome() {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         startActivity(intent);
-        finish();
+        finish(); // không quay lại login nữa
     }
 }

@@ -2,6 +2,7 @@ package com.example.tuan_1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -21,12 +22,15 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout CartButton, profile, notification;
     private SearchView searchView;
 
+    private Button btnAll, btnFruit, btnVegetable;
+
     // Dữ liệu gốc từ Firestore
     private ArrayList<String> allProductIds = new ArrayList<>();
     private ArrayList<String> allNames = new ArrayList<>();
     private ArrayList<String> allPrices = new ArrayList<>();
     private ArrayList<String> allImageUrls = new ArrayList<>();
     private ArrayList<String> allDescriptions = new ArrayList<>();
+    private ArrayList<String> allCategories = new ArrayList<>(); // ⭐
 
     // Dữ liệu đang hiển thị (sau khi lọc)
     private ArrayList<String> productIds = new ArrayList<>();
@@ -36,6 +40,9 @@ public class HomeActivity extends AppCompatActivity {
     private ArrayList<String> descriptions = new ArrayList<>();
 
     private GridAdapter adapter;
+
+    private String selectedCategory = "all"; // all / fruit / vegetable
+    private String currentQuery = "";        // text search hiện tại
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,17 +56,21 @@ public class HomeActivity extends AppCompatActivity {
         profile = findViewById(R.id.profile);
         notification = findViewById(R.id.announcement);
 
+        btnAll = findViewById(R.id.btnAll);
+        btnFruit = findViewById(R.id.btnFruit);
+        btnVegetable = findViewById(R.id.btnVegetable);
+
         // Chuyen qua trang Toi
         profile.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
             startActivity(intent);
         });
 
-        // Nút Thông báo: Chuyển đến NotificationActivity
+        // Nút Thông báo
         notification.setOnClickListener(v -> {
-                    Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
-                    startActivity(intent);
-                });
+            Intent intent = new Intent(HomeActivity.this, NotificationActivity.class);
+            startActivity(intent);
+        });
 
         // Tải sản phẩm từ Firestore
         loadProductsFromFirestore();
@@ -81,8 +92,9 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Search
+        // Search + Filter
         setupSearch();
+        setupCategoryButtons();
     }
 
     private void loadProductsFromFirestore() {
@@ -94,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
                     allPrices.clear();
                     allImageUrls.clear();
                     allDescriptions.clear();
+                    allCategories.clear();
 
                     for (QueryDocumentSnapshot doc : q) {
                         String id = doc.getId();
@@ -101,42 +114,65 @@ public class HomeActivity extends AppCompatActivity {
                         Double price = doc.getDouble("price");
                         String imageUrl = doc.getString("imageUrl");
                         String desc = doc.getString("description");
+                        String category = doc.getString("category");
 
                         if (name == null) name = "";
                         if (imageUrl == null) imageUrl = "";
                         if (desc == null) desc = "";
+                        if (category == null) category = "";
+
                         String priceText = (price != null ? String.valueOf(price.longValue()) : "0") + "đ";
+
 
                         allProductIds.add(id);
                         allNames.add(name);
                         allPrices.add(priceText);
                         allImageUrls.add(imageUrl);
                         allDescriptions.add(desc);
+                        allCategories.add(category);
                     }
                     // ban đầu hiển thị tất cả
-                    applyFilter("");
+                    applyFilter(currentQuery);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi tải sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void setupSearch() {
-        // cho search luôn mở
         searchView.setIconifiedByDefault(false);
         searchView.clearFocus();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                applyFilter(query);
+                currentQuery = query;
+                applyFilter(currentQuery);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                applyFilter(newText);
+                currentQuery = newText;
+                applyFilter(currentQuery);
                 return true;
             }
+        });
+    }
+
+    private void setupCategoryButtons() {
+        btnAll.setOnClickListener(v -> {
+            selectedCategory = "all";
+            applyFilter(currentQuery);
+        });
+
+        btnFruit.setOnClickListener(v -> {
+            selectedCategory = "fruit";
+            applyFilter(currentQuery);
+        });
+
+        btnVegetable.setOnClickListener(v -> {
+            selectedCategory = "vegetable";
+            applyFilter(currentQuery);
         });
     }
 
@@ -152,9 +188,14 @@ public class HomeActivity extends AppCompatActivity {
         for (int i = 0; i < allNames.size(); i++) {
             String name = allNames.get(i).toLowerCase();
             String desc = allDescriptions.get(i).toLowerCase();
+            String category = allCategories.get(i);
 
-            // lọc theo tên hoặc mô tả, bạn muốn chỉ tên thì bỏ "|| desc.contains(q)"
-            if (q.isEmpty() || name.contains(q) || desc.contains(q)) {
+            boolean matchText = q.isEmpty() || name.contains(q) || desc.contains(q);
+            boolean matchCategory =
+                    selectedCategory.equals("all") ||
+                            selectedCategory.equalsIgnoreCase(category);
+
+            if (matchText && matchCategory) {
                 productIds.add(allProductIds.get(i));
                 names.add(allNames.get(i));
                 prices.add(allPrices.get(i));
@@ -163,7 +204,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-        // tạo adapter mới mỗi lần lọc (đơn giản, không cần updateData)
         adapter = new GridAdapter(this, names, imageUrls, prices);
         gridView.setAdapter(adapter);
     }
