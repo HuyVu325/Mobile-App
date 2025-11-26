@@ -105,7 +105,7 @@ public class HomeActivity extends AppCompatActivity {
                         if (name == null) name = "";
                         if (imageUrl == null) imageUrl = "";
                         if (desc == null) desc = "";
-                        String priceText = (price != null ? price : 0) + "đ";
+                        String priceText = (price != null ? String.valueOf(price.longValue()) : "0") + "đ";
 
                         allProductIds.add(id);
                         allNames.add(name);

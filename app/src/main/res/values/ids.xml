@@ -2,5 +2,6 @@
 <resources>
     <item name="TAG_PRICE" type="id" />
     <item name="TAG_DOC_ID" type="id" />
+    <item name="TAG_IMAGE_URL" type="id" />
+    <item name="TAG_STOCK_QUANTITY" type="id" />
 </resources>
-    

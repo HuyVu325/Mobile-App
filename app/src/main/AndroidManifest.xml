@@ -24,6 +24,7 @@
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".DeliveryInfoActivity" />
         <activity android:name=".NotificationActivity" />
+        <activity android:name=".HistoryActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -33,6 +33,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -51,4 +54,5 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
 }

@@ -117,6 +117,9 @@ public class CartActivity extends AppCompatActivity {
                         // Lưu docId và giá vào tag để dễ truy xuất
                         item.setTag(R.id.TAG_PRICE, priceValue);
                         item.setTag(R.id.TAG_DOC_ID, docId);
+                        item.setTag(R.id.TAG_IMAGE_URL, imageUrl);
+                        item.setTag(R.id.TAG_STOCK_QUANTITY, stockQuantity);
+
 
                         ImageView img = item.findViewById(R.id.product_image);
                         TextView nameTv = item.findViewById(R.id.product_name);
@@ -206,18 +209,17 @@ public class CartActivity extends AppCompatActivity {
             if (checkbox.isChecked()) {
                 String docId = (String) item.getTag(R.id.TAG_DOC_ID);
                 long price = (long) item.getTag(R.id.TAG_PRICE);
+                String imageUrl = (String) item.getTag(R.id.TAG_IMAGE_URL);
+                Long stockQuantityLong = (Long) item.getTag(R.id.TAG_STOCK_QUANTITY);
+                int stockQuantity = stockQuantityLong != null ? stockQuantityLong.intValue() : 0;
 
                 TextView nameTv = item.findViewById(R.id.product_name);
-                ImageView img = item.findViewById(R.id.product_image); // Không lấy được URL trực tiếp, có thể để null hoặc query lại
                 TextView tvQty = item.findViewById(R.id.tvQuantity);
 
                 String name = nameTv.getText().toString();
                 int buyQty = Integer.parseInt(tvQty.getText().toString());
 
-                // Lấy imageUrl từ Firestore (tạm thời để trống)
-                String imageUrl = ""; // Cần query lại nếu muốn hiển thị ảnh ở màn sau
-
-                selectedItems.add(new CartItem(name, imageUrl, price, buyQty, docId));
+                selectedItems.add(new CartItem(name, imageUrl, price, buyQty, stockQuantity, docId));
             }
         }
         return selectedItems;
@@ -254,4 +256,3 @@ public class CartActivity extends AppCompatActivity {
         builder.show();
     }
 }
-
