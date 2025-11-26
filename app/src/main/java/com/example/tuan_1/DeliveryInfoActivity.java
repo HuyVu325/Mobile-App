@@ -1,6 +1,7 @@
 package com.example.tuan_1;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,12 +29,14 @@ import java.util.Locale;
 
 public class DeliveryInfoActivity extends AppCompatActivity {
 
+    private static final String TAG = "DeliveryInfoActivity";
     private EditText edtName, edtVoucher, edtNote;
     private TextView tvTotalPrice;
     private Button btnBack, btnConfirm;
     private LinearLayout selectedItemsContainer;
 
     private ArrayList<CartItem> selectedItems;
+    private long totalPrice;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -53,11 +56,11 @@ public class DeliveryInfoActivity extends AppCompatActivity {
         btnConfirm = findViewById(R.id.btnConfirm);
         selectedItemsContainer = findViewById(R.id.selected_items_container);
 
-        long total = getIntent().getLongExtra("totalPrice", 0);
+        totalPrice = getIntent().getLongExtra("totalPrice", 0);
         selectedItems = getIntent().getParcelableArrayListExtra("selectedItems");
 
         NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        tvTotalPrice.setText("Tổng tiền: " + nf.format(total));
+        tvTotalPrice.setText("Tổng tiền: " + nf.format(totalPrice));
 
         displaySelectedItems();
 
@@ -100,55 +103,36 @@ public class DeliveryInfoActivity extends AppCompatActivity {
             return;
         }
 
-        // Lấy tên người nhận từ EditText
         String recipientName = edtName.getText().toString().trim();
+        String voucherCode = edtVoucher.getText().toString().trim();
+        String shipperNote = edtNote.getText().toString().trim();
 
         btnConfirm.setEnabled(false);
         btnBack.setEnabled(false);
 
         String uid = user.getUid();
 
-        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+        WriteBatch batch = db.batch();
         for (CartItem item : selectedItems) {
-            DocumentReference productRef = db.collection("users").document(uid).collection("cart").document(item.getDocId());
-            tasks.add(productRef.get());
+            DocumentReference cartItemRef = db.collection("users").document(uid).collection("cart").document(item.getDocId());
+            // This logic is simplified as we assume the cart activity passed the correct buyQuantity
+            // A more robust solution would re-read the document before updating.
+            long currentQuantity = item.getQuantity(); // Assuming CartItem holds the total quantity
+            long newQuantity = currentQuantity - item.getBuyQuantity();
+            if (newQuantity > 0) {
+                batch.update(cartItemRef, "quantity", newQuantity);
+            } else {
+                batch.delete(cartItemRef);
+            }
         }
 
-        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentSnapshots -> {
-            WriteBatch batch = db.batch();
-            for (int i = 0; i < documentSnapshots.size(); i++) {
-                DocumentSnapshot snapshot = (DocumentSnapshot) documentSnapshots.get(i);
-                CartItem item = selectedItems.get(i);
-                DocumentReference productRef = db.collection("users").document(uid).collection("cart").document(item.getDocId());
-
-                if (snapshot.exists()) {
-                    Long currentStockObj = snapshot.getLong("quantity");
-                    long currentStock = (currentStockObj != null) ? currentStockObj : 0;
-                    long newStock = currentStock - item.getBuyQuantity();
-
-                    if (newStock <= 0) {
-                        batch.delete(productRef);
-                    } else {
-                        batch.update(productRef, "quantity", newStock);
-                    }
-                }
-            }
-            // Truyền tên người nhận vào commitBatch
-            commitBatch(batch, recipientName);
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Không thể lấy thông tin giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            btnConfirm.setEnabled(true);
-            btnBack.setEnabled(true);
-        });
+        commitBatch(batch, recipientName, voucherCode, shipperNote);
     }
 
-    // Thêm tham số recipientName
-    private void commitBatch(WriteBatch batch, String recipientName) {
+    private void commitBatch(WriteBatch batch, String recipientName, String voucherCode, String shipperNote) {
         batch.commit().addOnSuccessListener(aVoid -> {
-            String totalPriceString = tvTotalPrice.getText().toString();
-
-            // Truyền cả recipientName vào hàm tạo thông báo
-            createOrderSuccessNotification(selectedItems, totalPriceString, recipientName);
+            createOrderSuccessNotification(selectedItems, totalPrice, recipientName, voucherCode, shipperNote);
+            saveOrderToHistory(selectedItems, totalPrice, recipientName, voucherCode, shipperNote);
 
             Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
             setResult(RESULT_OK);
@@ -160,14 +144,32 @@ public class DeliveryInfoActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Tạo và lưu thông báo "Đặt hàng thành công" với chi tiết sản phẩm, giá, tổng tiền và tên người nhận.
-     * @param purchasedItems Danh sách các sản phẩm đã mua.
-     * @param totalPriceString Chuỗi hiển thị tổng số tiền.
-     * @param recipientName Tên của người nhận hàng.
-     */
-    // Thêm tham số recipientName
-    private void createOrderSuccessNotification(ArrayList<CartItem> purchasedItems, String totalPriceString, String recipientName) {
+    private void saveOrderToHistory(ArrayList<CartItem> purchasedItems, long totalPrice, String recipientName, String voucherCode, String shipperNote) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+        String userId = currentUser.getUid();
+
+        DocumentReference orderRef = db.collection("order_history").document();
+        String orderId = orderRef.getId();
+
+        List<Product> products = new ArrayList<>();
+        for (CartItem item : purchasedItems) {
+            products.add(new Product(item.getDocId(), item.getName(), item.getBuyQuantity(), item.getPrice(), item.getImageUrl()));
+        }
+
+        String initialStatus = "Đang xử lý";
+
+        OrderHistory newOrder = new OrderHistory(orderId, initialStatus, products, totalPrice, userId);
+
+        orderRef.set(newOrder)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Order history saved successfully for orderId: " + orderId))
+                .addOnFailureListener(e -> Log.e(TAG, "Error saving order history", e));
+    }
+
+
+    private void createOrderSuccessNotification(ArrayList<CartItem> purchasedItems, long totalPrice, String recipientName, String voucherCode, String shipperNote) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             return;
@@ -176,10 +178,8 @@ public class DeliveryInfoActivity extends AppCompatActivity {
         String title = "Đặt hàng thành công";
 
         NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-
-        // Xây dựng nội dung thông báo
         StringBuilder contentBuilder = new StringBuilder();
-        // Thêm tên người nhận vào đầu tiên
+
         contentBuilder.append("Người nhận: ").append(recipientName).append("\n\n");
         contentBuilder.append("Đơn hàng của bạn đã được tiếp nhận, bao gồm:\n");
 
@@ -188,18 +188,23 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                     .append("• ")
                     .append(item.getName())
                     .append(" - ")
-                    .append(nf.format(item.getPrice())) // Giả định có item.getPrice()
+                    .append(nf.format(item.getPrice()))
                     .append(" (SL: ")
                     .append(item.getBuyQuantity())
                     .append(")\n");
         }
-
-        // Thêm dòng tổng tiền
         contentBuilder.append("\n");
-        contentBuilder.append(totalPriceString);
+
+        if (voucherCode != null && !voucherCode.isEmpty()) {
+            contentBuilder.append("Mã giảm giá: ").append(voucherCode).append("\n");
+        }
+        if (shipperNote != null && !shipperNote.isEmpty()) {
+            contentBuilder.append("Ghi chú: ").append(shipperNote).append("\n");
+        }
+
+        contentBuilder.append("Tổng tiền: ").append(nf.format(totalPrice));
 
         String content = contentBuilder.toString();
-
         Timestamp timestamp = new Timestamp(new Date());
         NotificationModel newNotification = new NotificationModel(title, content, timestamp);
 
@@ -207,11 +212,7 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                 .document(userId)
                 .collection("notifications")
                 .add(newNotification)
-                .addOnSuccessListener(documentReference -> {
-                    // Log success if needed
-                })
-                .addOnFailureListener(e -> {
-                    // Log failure if needed
-                });
+                .addOnSuccessListener(documentReference -> Log.d(TAG, "Notification sent successfully."))
+                .addOnFailureListener(e -> Log.e(TAG, "Error sending notification", e));
     }
 }

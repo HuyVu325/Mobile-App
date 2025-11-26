@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileActivity extends AppCompatActivity {
     private TextView tvUsername, tvEmail;
-    private Button btnLogout, btnAdmin;
+    private Button btnLogout, btnAdmin, btnHistory;
 
     private LinearLayout navHome, navCart, navProfile, notification;
     private LinearLayout layoutUserInfoCard;
@@ -37,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
         btnLogout = findViewById(R.id.btnLogout);
         btnAdmin = findViewById(R.id.btnAdmin);
+        btnHistory = findViewById(R.id.btnHistory);
 
         navHome = findViewById(R.id.home);
         navCart = findViewById(R.id.cart);
@@ -85,6 +86,12 @@ public class ProfileActivity extends AppCompatActivity {
         // Bấm vào card -> mở màn sửa thông tin
         layoutUserInfoCard.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
+            startActivity(intent);
+        });
+
+        // Lịch sử mua hàng
+        btnHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, HistoryActivity.class);
             startActivity(intent);
         });
 

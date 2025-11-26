@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvOrderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thông tin đơn hàng"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/tvOrderId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvOrderTitle"
+            android:layout_marginTop="8dp"
+            android:text="ID đơn hàng: #12345" />
+
+        <TextView
+            android:id="@+id/tvOrderStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvOrderId"
+            android:layout_marginTop="4dp"
+            android:text="Tình trạng: Đang xử lý" />
+
+        <LinearLayout
+            android:id="@+id/layoutProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvOrderStatus"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+            <!-- Các sản phẩm sẽ được thêm vào đây bằng code -->
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCancelReason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutProducts"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvTotalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvCancelReason"
+            android:layout_marginTop="8dp"
+            android:text="Tổng giá tiền: 500,000đ"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCancelOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="Hủy Đơn" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_delete"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Xóa lịch sử"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

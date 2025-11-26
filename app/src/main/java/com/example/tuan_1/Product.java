@@ -1,32 +1,41 @@
 package com.example.tuan_1;
 
-import java.io.Serializable;
-
-public class Product implements Serializable {
+public class Product {
+    private String id;
     private String name;
-    private String price;
-    private int imageRes;
-    private int quantity;   // << thêm
+    private int quantity;
+    private double price;
+    private String imageUrl;
 
-    public Product(String name, String price, int imageRes) {
-        this.name = name;
-        this.price = price;
-        this.imageRes = imageRes;
-        this.quantity = 1; // mặc định
+    public Product() {
+        // Required for Firebase
     }
 
-    // Thêm constructor có số lượng
-    public Product(String name, String price, int imageRes, int quantity) {
+    public Product(String id, String name, int quantity, double price, String imageUrl) {
+        this.id = id;
         this.name = name;
-        this.price = price;
-        this.imageRes = imageRes;
         this.quantity = quantity;
+        this.price = price;
+        this.imageUrl = imageUrl;
     }
 
-    public String getName() { return name; }
-    public String getPrice() { return price; }
-    public int getImageRes() { return imageRes; }
+    public String getId() {
+        return id;
+    }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
 }
