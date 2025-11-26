@@ -18,7 +18,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvUsername, tvEmail;
     private Button btnLogout, btnAdmin;
 
-    private LinearLayout navHome, navCart, navAnnouncement, navProfile;
+    private LinearLayout navHome, navCart, navProfile, notification;
     private LinearLayout layoutUserInfoCard;
 
     private FirebaseAuth mAuth;
@@ -40,9 +40,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         navHome = findViewById(R.id.home);
         navCart = findViewById(R.id.cart);
-        navAnnouncement = findViewById(R.id.announcement);
+        notification = findViewById(R.id.announcement);
         navProfile = findViewById(R.id.profile);
         layoutUserInfoCard = findViewById(R.id.layoutUserInfoCard);
+
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
@@ -114,9 +115,10 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        navAnnouncement.setOnClickListener(v ->
-                Toast.makeText(this, "Chức năng Thông báo chưa làm 😅", Toast.LENGTH_SHORT).show());
-
+        notification.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, NotificationActivity.class);
+            startActivity(intent);
+        });
         navProfile.setOnClickListener(v -> {
             // đang ở tab Tôi, không làm gì
         });
