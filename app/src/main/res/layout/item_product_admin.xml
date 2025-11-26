@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tvProductNameAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tên sản phẩm"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#212121" />
+
+    <TextView
+        android:id="@+id/tvProductPriceAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giá: 0đ"
+        android:textSize="14sp"
+        android:textColor="#616161" />
+
+    <TextView
+        android:id="@+id/tvProductCategoryAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loại: fruit"
+        android:textSize="13sp"
+        android:textColor="#757575" />
+
+    <TextView
+        android:id="@+id/tvHintAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="(Chạm để sửa, giữ lâu để xóa)"
+        android:textSize="12sp"
+        android:textColor="#9E9E9E" />
+
+</LinearLayout>

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminActivity extends AppCompatActivity {
 
-    private Button btnAddProduct, btnManageUsers, btnManageComments;
+    private Button btnAddProduct, btnManageUsers, btnManageComments, btnManageProducts;
     private ImageView btnBackAdmin;
 
     @Override
@@ -20,11 +20,12 @@ public class AdminActivity extends AppCompatActivity {
         btnAddProduct = findViewById(R.id.btnAddProduct);
         btnManageUsers = findViewById(R.id.btnManageUsers);
         btnManageComments = findViewById(R.id.btnManageComments);
+        btnManageProducts = findViewById(R.id.btnManageProducts);
         btnBackAdmin = findViewById(R.id.btnBackAdmin);
 
         btnBackAdmin.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, ProfileActivity.class));
-
+            finish();
         });
 
         btnAddProduct.setOnClickListener(v -> {
@@ -37,6 +38,11 @@ public class AdminActivity extends AppCompatActivity {
 
         btnManageComments.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, CommentManagementActivity.class));
+        });
+
+        // 👉 Quản lý sản phẩm
+        btnManageProducts.setOnClickListener(v -> {
+            startActivity(new Intent(AdminActivity.this, ProductManagementActivity.class));
         });
     }
 }
