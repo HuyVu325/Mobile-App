@@ -3,7 +3,7 @@ package com.example.tuan_1;
 public class Product {
     private String id;
     private String name;
-    private int quantity;
+    private int buyQuantity;
     private double price;
     private String imageUrl;
 
@@ -11,10 +11,10 @@ public class Product {
         // Required for Firebase
     }
 
-    public Product(String id, String name, int quantity, double price, String imageUrl) {
+    public Product(String id, String name, int buyQuantity, double price, String imageUrl) {
         this.id = id;
         this.name = name;
-        this.quantity = quantity;
+        this.buyQuantity = buyQuantity;
         this.price = price;
         this.imageUrl = imageUrl;
     }
@@ -27,8 +27,8 @@ public class Product {
         return name;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getBuyQuantity() {
+        return buyQuantity;
     }
 
     public double getPrice() {

@@ -256,6 +256,7 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                 .addOnSuccessListener(a -> {
                     createNotification(uid, orderId);
                     Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
+                    setResult(RESULT_OK);
                     finish();
                 })
                 .addOnFailureListener(e -> {

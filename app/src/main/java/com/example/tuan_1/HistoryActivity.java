@@ -189,7 +189,7 @@ public class HistoryActivity extends AppCompatActivity {
             if (o.getProducts() != null) {
                 for (Product p : o.getProducts()) {
                     TextView t = new TextView(itemView.getContext());
-                    t.setText("- " + p.getName() + " (SL: " + p.getQuantity() + ")");
+                    t.setText("- " + p.getName() + " (SL: " + p.getBuyQuantity() + ")");
                     layoutProducts.addView(t);
                 }
             }
