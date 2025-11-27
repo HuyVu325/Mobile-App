@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etVoucherName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tên mã" />
+
+    <EditText
+        android:id="@+id/etVoucherDiscount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Phần trăm giảm giá" />
+
+    <EditText
+        android:id="@+id/etVoucherStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngày bắt đầu (dd/MM/yyyy)"
+        android:focusable="false"
+        android:clickable="true" />
+
+    <EditText
+        android:id="@+id/etVoucherEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngày kết thúc (dd/MM/yyyy)"
+        android:focusable="false"
+        android:clickable="true" />
+
+</LinearLayout>

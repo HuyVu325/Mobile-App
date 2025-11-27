@@ -103,6 +103,20 @@
             android:textSize="18sp"
             android:backgroundTint="#FF9800"
             android:textColor="@android:color/white"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Quản lí voucher -->
+        <Button
+            android:id="@+id/btnManageVouchers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎫  Quản lí voucher"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:backgroundTint="#FFC107"
+            android:textColor="@android:color/white"
             android:padding="14dp"/>
     </LinearLayout>
 

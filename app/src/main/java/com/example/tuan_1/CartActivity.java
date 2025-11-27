@@ -57,7 +57,19 @@ public class CartActivity extends AppCompatActivity {
             Intent intent = new Intent(CartActivity.this, NotificationActivity.class);
             startActivity(intent);
         });
-        buyButton.setOnClickListener(v -> openPaymentMethodDialog());
+
+        buyButton.setOnClickListener(v -> {
+            ArrayList<CartItem> selectedItems = getSelectedItems();
+            if (selectedItems.isEmpty()) {
+                Toast.makeText(CartActivity.this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            long totalPayment = selectedItems.stream().mapToLong(item -> item.getPrice() * item.getBuyQuantity()).sum();
+            Intent deli = new Intent(CartActivity.this, DeliveryInfoActivity.class);
+            deli.putParcelableArrayListExtra("selectedItems", selectedItems);
+            deli.putExtra("totalPrice", totalPayment);
+            deliveryLauncher.launch(deli);
+        });
 
         // Xử lý kết quả trả về từ DeliveryInfoActivity
         deliveryLauncher = registerForActivityResult(
@@ -150,7 +162,7 @@ public class CartActivity extends AppCompatActivity {
                                 tvQuantity.setText(String.valueOf(buyQty));
                                 if (checkbox.isChecked()) updateTotalPrice();
                             } else {
-                                Toast.makeText(this, "Không thể vượt quá số lượng tồn kho", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Không thể vượt quá số lượng trong giỏ", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -223,36 +235,5 @@ public class CartActivity extends AppCompatActivity {
             }
         }
         return selectedItems;
-    }
-
-
-    private void openPaymentMethodDialog() {
-        ArrayList<CartItem> selectedItems = getSelectedItems();
-        long totalPayment = selectedItems.stream().mapToLong(item -> item.getPrice() * item.getBuyQuantity()).sum();
-
-        if (selectedItems.isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setTitle("Chọn phương thức thanh toán");
-        String[] methods = {"Thanh toán bằng QR", "Thanh toán khi nhận hàng"};
-
-        builder.setItems(methods, (dialog, which) -> {
-            if (which == 0) { // QR Payment
-                Intent qr = new Intent(this, QRPaymentActivity.class);
-                qr.putExtra("totalPrice", totalPayment);
-                startActivity(qr);
-                // Bạn có thể xử lý việc giảm số lượng ở đây nếu cần
-            } else { // Delivery Info
-                Intent deli = new Intent(this, DeliveryInfoActivity.class);
-                deli.putParcelableArrayListExtra("selectedItems", selectedItems);
-                deli.putExtra("totalPrice", totalPayment);
-                deliveryLauncher.launch(deli);
-            }
-        });
-
-        builder.show();
     }
 }

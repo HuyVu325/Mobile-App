@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminActivity extends AppCompatActivity {
 
-    private Button btnAddProduct, btnManageUsers, btnManageComments, btnManageProducts;
+    private Button btnAddProduct, btnManageUsers, btnManageComments, btnManageProducts, btnManageVouchers;
     private ImageView btnBackAdmin;
 
     @Override
@@ -21,6 +21,7 @@ public class AdminActivity extends AppCompatActivity {
         btnManageUsers = findViewById(R.id.btnManageUsers);
         btnManageComments = findViewById(R.id.btnManageComments);
         btnManageProducts = findViewById(R.id.btnManageProducts);
+        btnManageVouchers = findViewById(R.id.btnManageVouchers);
         btnBackAdmin = findViewById(R.id.btnBackAdmin);
 
         btnBackAdmin.setOnClickListener(v -> {
@@ -43,6 +44,11 @@ public class AdminActivity extends AppCompatActivity {
         // 👉 Quản lý sản phẩm
         btnManageProducts.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, ProductManagementActivity.class));
+        });
+
+        // 👉 Quản lý voucher
+        btnManageVouchers.setOnClickListener(v -> {
+            startActivity(new Intent(AdminActivity.this, VoucherActivity.class));
         });
     }
 }

@@ -27,6 +27,7 @@
         <activity android:name=".HistoryActivity" />
         <activity android:name=".EditProductActivity" />
         <activity android:name=".ProductManagementActivity" />
+        <activity android:name=".VoucherActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
