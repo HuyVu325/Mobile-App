@@ -3,6 +3,7 @@ package com.example.tuan_1;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -11,32 +12,37 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class DeliveryInfoActivity extends AppCompatActivity {
 
     private static final String TAG = "DeliveryInfoActivity";
+
     private EditText edtName, edtVoucher, edtNote;
-    private TextView tvTotalPrice;
-    private Button btnBack, btnConfirm;
+    private TextView tvTotalPrice, tvVoucherInfo;
+    private Button btnBack, btnConfirm, btnApplyVoucher;
     private LinearLayout selectedItemsContainer;
 
     private ArrayList<CartItem> selectedItems;
-    private long totalPrice;
+    private long originalTotalPrice;
+    private long finalTotalPrice;
+    private int discountPercent = 0;
+
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -52,16 +58,19 @@ public class DeliveryInfoActivity extends AppCompatActivity {
         edtVoucher = findViewById(R.id.edtVoucher);
         edtNote = findViewById(R.id.edtNote);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
+        tvVoucherInfo = findViewById(R.id.tvVoucherInfo);
         btnBack = findViewById(R.id.btnBack);
         btnConfirm = findViewById(R.id.btnConfirm);
+        btnApplyVoucher = findViewById(R.id.btnApplyVoucher);
         selectedItemsContainer = findViewById(R.id.selected_items_container);
 
-        totalPrice = getIntent().getLongExtra("totalPrice", 0);
+        originalTotalPrice = getIntent().getLongExtra("totalPrice", 0L);
         selectedItems = getIntent().getParcelableArrayListExtra("selectedItems");
+        if (selectedItems == null) selectedItems = new ArrayList<>();
 
-        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        tvTotalPrice.setText("Tổng tiền: " + nf.format(totalPrice));
+        finalTotalPrice = originalTotalPrice;
 
+        updateTotalPriceDisplay();
         displaySelectedItems();
 
         btnBack.setOnClickListener(v -> {
@@ -69,9 +78,9 @@ public class DeliveryInfoActivity extends AppCompatActivity {
             finish();
         });
 
+        btnApplyVoucher.setOnClickListener(v -> applyVoucher());
         btnConfirm.setOnClickListener(v -> {
-            String name = edtName.getText().toString().trim();
-            if (name.isEmpty()) {
+            if (edtName.getText().toString().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập tên người nhận!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -79,140 +88,198 @@ public class DeliveryInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void displaySelectedItems() {
-        if (selectedItems == null || selectedItems.isEmpty()) {
-            return;
-        }
+    private void updateTotalPriceDisplay() {
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        tvTotalPrice.setText("Tổng tiền: " + nf.format(finalTotalPrice) + "đ");
+    }
 
+    private void displaySelectedItems() {
         selectedItemsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (CartItem item : selectedItems) {
-            TextView itemView = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, selectedItemsContainer, false);
-            String itemText = String.format(Locale.US, "• %s (Số lượng: %d)", item.getName(), item.getBuyQuantity());
-            itemView.setText(itemText);
-            itemView.setTextSize(16);
-            selectedItemsContainer.addView(itemView);
+        if (selectedItems.isEmpty()) {
+            TextView empty = new TextView(this);
+            empty.setText("Không có sản phẩm nào.");
+            selectedItemsContainer.addView(empty);
+            return;
         }
+
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+
+        for (CartItem ci : selectedItems) {
+            View row = inflater.inflate(android.R.layout.simple_list_item_2, selectedItemsContainer, false);
+            TextView tv1 = row.findViewById(android.R.id.text1);
+            TextView tv2 = row.findViewById(android.R.id.text2);
+
+            tv1.setText(ci.getName() + " × " + ci.getBuyQuantity());
+            tv2.setText("Giá: " + nf.format(ci.getPrice()) + "đ");
+
+            selectedItemsContainer.addView(row);
+        }
+    }
+
+    private void applyVoucher() {
+        String code = edtVoucher.getText().toString().trim();
+        if (code.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập mã voucher", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnApplyVoucher.setEnabled(false);
+
+        db.collection("vouchers")
+                .whereEqualTo("name", code)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    btnApplyVoucher.setEnabled(true);
+
+                    if (snap.isEmpty()) {
+                        Toast.makeText(this, "Voucher không tồn tại", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    var doc = snap.getDocuments().get(0);
+
+                    String startDateStr = doc.getString("startDate");
+                    String endDateStr = doc.getString("endDate");
+                    Number discountNum = doc.getLong("discount");
+
+                    if (discountNum == null) discountNum = 0;
+                    discountPercent = discountNum.intValue();
+
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                        sdf.setLenient(false);
+
+                        // Normalize today's date to the beginning of the day
+                        Calendar cal = Calendar.getInstance();
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        Date today = cal.getTime();
+
+                        // Parse start and end dates
+                        Date startDate = sdf.parse(startDateStr);
+                        Date endDate = sdf.parse(endDateStr);
+
+                        if (today.before(startDate)) {
+                            Toast.makeText(this, "Voucher chưa có hiệu lực", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (today.after(endDate)) {
+                            Toast.makeText(this, "Voucher đã hết hạn", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Voucher is valid, apply discount
+                        finalTotalPrice = originalTotalPrice - (originalTotalPrice * discountPercent / 100);
+                        updateTotalPriceDisplay();
+                        tvVoucherInfo.setText("Đã áp dụng giảm " + discountPercent + "%");
+                        tvVoucherInfo.setVisibility(View.VISIBLE);
+
+                        edtVoucher.setEnabled(false);
+                        btnApplyVoucher.setEnabled(false);
+
+                    } catch (ParseException | NullPointerException ex) {
+                        Toast.makeText(this, "Ngày của voucher không hợp lệ", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnApplyVoucher.setEnabled(true);
+                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void confirmPurchase() {
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null || selectedItems == null || selectedItems.isEmpty()) {
-            Toast.makeText(this, "Lỗi: Không tìm thấy người dùng hoặc sản phẩm.", Toast.LENGTH_SHORT).show();
+        if (user == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String recipientName = edtName.getText().toString().trim();
-        String voucherCode = edtVoucher.getText().toString().trim();
-        String shipperNote = edtNote.getText().toString().trim();
+        if (selectedItems.isEmpty()) {
+            Toast.makeText(this, "Không có sản phẩm", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         btnConfirm.setEnabled(false);
         btnBack.setEnabled(false);
 
         String uid = user.getUid();
-
         WriteBatch batch = db.batch();
-        for (CartItem item : selectedItems) {
-            DocumentReference cartItemRef = db.collection("users").document(uid).collection("cart").document(item.getDocId());
-            // This logic is simplified as we assume the cart activity passed the correct buyQuantity
-            // A more robust solution would re-read the document before updating.
-            long currentQuantity = item.getQuantity(); // Assuming CartItem holds the total quantity
-            long newQuantity = currentQuantity - item.getBuyQuantity();
-            if (newQuantity > 0) {
-                batch.update(cartItemRef, "quantity", newQuantity);
+
+        for (CartItem ci : selectedItems) {
+            DocumentReference ref = db.collection("users").document(uid).collection("cart").document(ci.getDocId());
+            long newStock = ci.getQuantity() - ci.getBuyQuantity();
+            if (newStock > 0) {
+                batch.update(ref, "quantity", newStock);
             } else {
-                batch.delete(cartItemRef);
+                batch.delete(ref);
             }
         }
 
-        commitBatch(batch, recipientName, voucherCode, shipperNote);
+        batch.commit()
+                .addOnSuccessListener(a -> saveOrderHistory(uid))
+                .addOnFailureListener(e -> {
+                    btnConfirm.setEnabled(true);
+                    btnBack.setEnabled(true);
+                    Toast.makeText(this, "Lỗi giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-    private void commitBatch(WriteBatch batch, String recipientName, String voucherCode, String shipperNote) {
-        batch.commit().addOnSuccessListener(aVoid -> {
-            createOrderSuccessNotification(selectedItems, totalPrice, recipientName, voucherCode, shipperNote);
-            saveOrderToHistory(selectedItems, totalPrice, recipientName, voucherCode, shipperNote);
-
-            Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
-            setResult(RESULT_OK);
-            finish();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Cập nhật giỏ hàng thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            btnConfirm.setEnabled(true);
-            btnBack.setEnabled(true);
-        });
-    }
-
-    private void saveOrderToHistory(ArrayList<CartItem> purchasedItems, long totalPrice, String recipientName, String voucherCode, String shipperNote) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            return;
-        }
-        String userId = currentUser.getUid();
-
+    private void saveOrderHistory(String uid) {
         DocumentReference orderRef = db.collection("order_history").document();
         String orderId = orderRef.getId();
 
-        List<Product> products = new ArrayList<>();
-        for (CartItem item : purchasedItems) {
-            products.add(new Product(item.getDocId(), item.getName(), item.getBuyQuantity(), item.getPrice(), item.getImageUrl()));
+        ArrayList<Map<String, Object>> productList = new ArrayList<>();
+        for (CartItem ci : selectedItems) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", ci.getName());
+            map.put("imageUrl", ci.getImageUrl());
+            map.put("price", ci.getPrice());
+            map.put("buyQuantity", ci.getBuyQuantity());
+            productList.add(map);
         }
 
-        String initialStatus = "Đang xử lý";
+        Map<String, Object> orderData = new HashMap<>();
+        orderData.put("orderId", orderId);
+        orderData.put("status", "Đang xử lý");
+        orderData.put("totalPrice", finalTotalPrice);
+        orderData.put("userId", uid);
+        orderData.put("products", productList);
+        orderData.put("note", edtNote.getText().toString().trim());
+        orderData.put("timestamp", Timestamp.now());
 
-        OrderHistory newOrder = new OrderHistory(orderId, initialStatus, products, totalPrice, userId);
-
-        orderRef.set(newOrder)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Order history saved successfully for orderId: " + orderId))
-                .addOnFailureListener(e -> Log.e(TAG, "Error saving order history", e));
+        orderRef.set(orderData)
+                .addOnSuccessListener(a -> {
+                    createNotification(uid, orderId);
+                    Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnConfirm.setEnabled(true);
+                    btnBack.setEnabled(true);
+                    Toast.makeText(this, "Lỗi lưu đơn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
+    private void createNotification(String uid, String orderId) {
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
-    private void createOrderSuccessNotification(ArrayList<CartItem> purchasedItems, long totalPrice, String recipientName, String voucherCode, String shipperNote) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            return;
-        }
-        String userId = currentUser.getUid();
-        String title = "Đặt hàng thành công";
+        StringBuilder msg = new StringBuilder();
+        msg.append("Đơn hàng ").append(orderId).append(" đã được tạo.\n").append("Tổng: ").append(nf.format(finalTotalPrice)).append("đ\n").append("Sản phẩm:\n");
 
-        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        StringBuilder contentBuilder = new StringBuilder();
-
-        contentBuilder.append("Người nhận: ").append(recipientName).append("\n\n");
-        contentBuilder.append("Đơn hàng của bạn đã được tiếp nhận, bao gồm:\n");
-
-        for (CartItem item : purchasedItems) {
-            contentBuilder
-                    .append("• ")
-                    .append(item.getName())
-                    .append(" - ")
-                    .append(nf.format(item.getPrice()))
-                    .append(" (SL: ")
-                    .append(item.getBuyQuantity())
-                    .append(")\n");
-        }
-        contentBuilder.append("\n");
-
-        if (voucherCode != null && !voucherCode.isEmpty()) {
-            contentBuilder.append("Mã giảm giá: ").append(voucherCode).append("\n");
-        }
-        if (shipperNote != null && !shipperNote.isEmpty()) {
-            contentBuilder.append("Ghi chú: ").append(shipperNote).append("\n");
+        for (CartItem ci : selectedItems) {
+            msg.append("• ").append(ci.getName()).append(" × ").append(ci.getBuyQuantity()).append("\n");
         }
 
-        contentBuilder.append("Tổng tiền: ").append(nf.format(totalPrice));
+        Map<String, Object> notify = new HashMap<>();
+        notify.put("title", "Đặt hàng thành công");
+        notify.put("content", msg.toString());
+        notify.put("timestamp", Timestamp.now());
 
-        String content = contentBuilder.toString();
-        Timestamp timestamp = new Timestamp(new Date());
-        NotificationModel newNotification = new NotificationModel(title, content, timestamp);
-
-        db.collection("users")
-                .document(userId)
-                .collection("notifications")
-                .add(newNotification)
-                .addOnSuccessListener(documentReference -> Log.d(TAG, "Notification sent successfully."))
-                .addOnFailureListener(e -> Log.e(TAG, "Error sending notification", e));
+        db.collection("users").document(uid).collection("notifications").add(notify).addOnSuccessListener(a -> Log.d(TAG, "Notification created"));
     }
 }

@@ -26,7 +26,7 @@ public class CommentManagementActivity extends AppCompatActivity {
 
     private ImageView btnBackComment;
     private ArrayList<Map<String, String>> data = new ArrayList<>();
-    private ArrayList<String> reviewDocPaths = new ArrayList<>(); // lưu path để xóa
+    private ArrayList<String> reviewDocPaths = new ArrayList<>();
     private SimpleAdapter adapter;
 
     @Override

@@ -209,7 +209,7 @@ public class HistoryActivity extends AppCompatActivity {
 
                 btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog(o));
 
-            } else { // For delivered or other statuses
+            } else {
                 btnCancel.setVisibility(View.GONE);
                 btnDelete.setVisibility(View.GONE);
                 tvCancelReason.setVisibility(View.GONE);

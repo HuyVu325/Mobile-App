@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -55,7 +56,7 @@ public class DetailActivity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
         tvPrice = findViewById(R.id.tvPrice);
         tvQuantity = findViewById(R.id.tvQuantity);
-        tvDescription = findViewById(R.id.tvDescription); // 👈 thêm
+        tvDescription = findViewById(R.id.tvDescription);
         btnAddToCart = findViewById(R.id.btnAddToCart);
 
         ratingUser = findViewById(R.id.ratingUser);
@@ -69,12 +70,11 @@ public class DetailActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("product_name");
         price = getIntent().getStringExtra("product_price");
         imageUrl = getIntent().getStringExtra("product_image");
-        desc = getIntent().getStringExtra("product_desc"); // nếu có
+        desc = getIntent().getStringExtra("product_desc");
         productId = getIntent().getStringExtra("product_id");
 
         if (productId == null || productId.isEmpty()) {
             Toast.makeText(this, "Thiếu product_id, không thể tải đánh giá", Toast.LENGTH_SHORT).show();
-            // vẫn cho xem chi tiết cơ bản
         }
 
         tvName.setText(name != null ? name : "");
@@ -95,7 +95,10 @@ public class DetailActivity extends AppCompatActivity {
 
         tvQuantity.setText(String.valueOf(quantity));
 
-        btnBack.setOnClickListener(v -> onBackPressed());
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(DetailActivity.this, HomeActivity.class);
+            startActivity(intent);
+        });
 
         btnMinus.setOnClickListener(v -> {
             if (quantity > 1) {

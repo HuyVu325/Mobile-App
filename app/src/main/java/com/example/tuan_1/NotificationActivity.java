@@ -23,8 +23,6 @@ public class NotificationActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private TextView tvTitle;
-
-    // Các biến cho thanh điều hướng
     private LinearLayout homeNav, cartNav, profileNav;
 
     @Override
@@ -91,7 +89,38 @@ public class NotificationActivity extends AppCompatActivity {
         Button cancelButton = itemView.findViewById(R.id.cancel_button);
 
         titleView.setText(notification.getTitle());
-        contentView.setText(notification.getContent());
+
+        String originalContent = notification.getContent();
+        if (originalContent != null) {
+            String[] parts = originalContent.split("\n");
+            String totalPart = null;
+            StringBuilder otherParts = new StringBuilder();
+
+            for (String part : parts) {
+                if (part.toLowerCase().contains("tổng")) {
+                    totalPart = part;
+                } else {
+                    if (otherParts.length() > 0) {
+                        otherParts.append("\n");
+                    }
+                    otherParts.append(part);
+                }
+            }
+
+            String newContent;
+            if (totalPart != null) {
+                if (otherParts.length() > 0) {
+                    newContent = otherParts.toString() + "\n" + totalPart;
+                } else {
+                    newContent = totalPart;
+                }
+            } else {
+                newContent = originalContent;
+            }
+            contentView.setText(newContent);
+        } else {
+            contentView.setText("");
+        }
 
         cancelButton.setOnClickListener(v -> {
             notificationContainer.removeView(itemView);

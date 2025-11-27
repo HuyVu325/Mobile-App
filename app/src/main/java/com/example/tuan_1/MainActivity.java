@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 👉 HÀM GIỮ TRẠNG THÁI ĐĂNG NHẬP
+    // HÀM GIỮ TRẠNG THÁI ĐĂNG NHẬP
     @Override
     protected void onStart() {
         super.onStart();

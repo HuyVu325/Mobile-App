@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,7 +43,10 @@ public class EditProfileActivity extends AppCompatActivity {
         edtAddressEdit = findViewById(R.id.edtAddressEdit);
         btnSaveEditProfile = findViewById(R.id.btnSaveEditProfile);
 
-        btnBackEditProfile.setOnClickListener(v -> onBackPressed());
+        btnBackEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
@@ -94,7 +98,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 .update(updates)
                 .addOnSuccessListener(a -> {
                     Toast.makeText(this, "Đã lưu thông tin", Toast.LENGTH_SHORT).show();
-                    finish(); // quay về ProfileActivity
+                    finish();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show());
