@@ -130,6 +130,10 @@ public class VoucherActivity extends AppCompatActivity {
 
             try {
                 long discount = Long.parseLong(discountStr);
+                if (discount > 100) {
+                    Toast.makeText(this, "Phần trăm giảm giá không được vượt quá 100%", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Map<String, Object> voucher = new HashMap<>();
                 voucher.put("name", name);
@@ -185,6 +189,10 @@ public class VoucherActivity extends AppCompatActivity {
 
             try {
                 long discount = Long.parseLong(discountStr);
+                if (discount > 100) {
+                    Toast.makeText(this, "Phần trăm giảm giá không được vượt quá 100%", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Map<String, Object> voucher = new HashMap<>();
                 voucher.put("name", name);
