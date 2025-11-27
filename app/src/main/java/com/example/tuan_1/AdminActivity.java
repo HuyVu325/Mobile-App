@@ -24,24 +24,28 @@ public class AdminActivity extends AppCompatActivity {
         btnManageVouchers = findViewById(R.id.btnManageVouchers);
         btnBackAdmin = findViewById(R.id.btnBackAdmin);
 
+        // Quay về trang cá nhân
         btnBackAdmin.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, ProfileActivity.class));
             finish();
         });
 
+        // Thêm sản phẩm
         btnAddProduct.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, AddProductActivity.class));
         });
 
+        // Quản lý người dùng
         btnManageUsers.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, UserManagementActivity.class));
         });
 
+        // Quản lý bình luận
         btnManageComments.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, CommentManagementActivity.class));
         });
 
-        // 👉 Quản lý sản phẩm
+        // Quản lý sản phẩm
         btnManageProducts.setOnClickListener(v -> {
             startActivity(new Intent(AdminActivity.this, ProductManagementActivity.class));
         });

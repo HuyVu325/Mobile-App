@@ -153,7 +153,7 @@ public class AddProductActivity extends AppCompatActivity {
                             product.put("imageUrl", imageUrl);
                             product.put("ownerId", uid);
                             product.put("createdAt", FieldValue.serverTimestamp());
-                            product.put("category", selectedCategory); // ⭐ fruit / vegetable
+                            product.put("category", selectedCategory);
 
                             db.collection("products")
                                     .add(product)

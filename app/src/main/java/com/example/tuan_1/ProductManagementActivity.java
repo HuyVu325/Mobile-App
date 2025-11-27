@@ -39,7 +39,8 @@ public class ProductManagementActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         btnBackProduct.setOnClickListener(v -> {
-            finish();
+            Intent intent = new Intent(ProductManagementActivity.this, AdminActivity.class);
+            startActivity(intent);
         });
 
         adapter = new SimpleAdapter(

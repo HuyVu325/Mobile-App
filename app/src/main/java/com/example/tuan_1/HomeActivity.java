@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     private GridAdapter adapter;
 
     private String selectedCategory = "all"; // all / fruit / vegetable
-    private String currentQuery = "";        // text search hiện tại
+    private String currentQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

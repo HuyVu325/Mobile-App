@@ -45,7 +45,7 @@ public class EditProductActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_product); // dùng lại layout add
+        setContentView(R.layout.add_product);
 
         // Nhận id sản phẩm
         productId = getIntent().getStringExtra("product_id");
@@ -67,7 +67,9 @@ public class EditProductActivity extends AppCompatActivity {
 
         btnSaveProduct.setText("Cập nhật sản phẩm");
 
-        btnBackAdd.setOnClickListener(v -> onBackPressed());
+        btnBackAdd.setOnClickListener(v -> {
+            startActivity(new Intent(EditProductActivity.this, ProductManagementActivity.class));
+        });
 
         // Firebase
         db = FirebaseFirestore.getInstance();

@@ -23,8 +23,6 @@ public class NotificationActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private TextView tvTitle;
-
-    // Các biến cho thanh điều hướng
     private LinearLayout homeNav, cartNav, profileNav;
 
     @Override
