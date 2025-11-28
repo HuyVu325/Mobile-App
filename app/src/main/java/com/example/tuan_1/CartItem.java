@@ -7,9 +7,9 @@ public class CartItem implements Parcelable {
     private String name;
     private String imageUrl;
     private long price;
-    private int buyQuantity; // Số lượng mua
-    private int quantity; // Số lượng hiện có
-    private String docId; // ID của document trong Firestore
+    private int buyQuantity;
+    private int quantity;
+    private String docId;
 
     public CartItem(String name, String imageUrl, long price, int buyQuantity, int quantity, String docId) {
         this.name = name;
@@ -29,7 +29,6 @@ public class CartItem implements Parcelable {
     public String getDocId() { return docId; }
 
 
-    // --- Parcelable Implementation ---
     protected CartItem(Parcel in) {
         name = in.readString();
         imageUrl = in.readString();

@@ -19,7 +19,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister, btnBack;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db; // Firestore
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

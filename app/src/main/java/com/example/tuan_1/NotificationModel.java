@@ -6,7 +6,7 @@ import com.google.firebase.Timestamp;
 public class NotificationModel {
     private String title;
     private String content;
-    private Timestamp timestamp; // Để sắp xếp thông báo theo thời gian
+    private Timestamp timestamp;
 
     // Constructor mặc định là bắt buộc cho Firestore
     public NotificationModel() { }

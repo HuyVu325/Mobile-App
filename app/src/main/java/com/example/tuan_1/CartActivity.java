@@ -126,7 +126,6 @@ public class CartActivity extends AppCompatActivity {
                         LinearLayout item = (LinearLayout) LayoutInflater.from(this)
                                 .inflate(R.layout.cart_item, cartContainer, false);
 
-                        // Lưu docId và giá vào tag để dễ truy xuất
                         item.setTag(R.id.TAG_PRICE, priceValue);
                         item.setTag(R.id.TAG_DOC_ID, docId);
                         item.setTag(R.id.TAG_IMAGE_URL, imageUrl);

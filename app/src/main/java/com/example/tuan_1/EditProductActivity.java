@@ -33,8 +33,8 @@ public class EditProductActivity extends AppCompatActivity {
     private Button btnChooseImage, btnSaveProduct;
     private Spinner spinnerCategory;
 
-    private Uri newImageUri = null;      // ảnh mới (nếu có chọn lại)
-    private String currentImageUrl = ""; // ảnh cũ
+    private Uri newImageUri = null;
+    private String currentImageUrl = "";
     private String selectedCategory = "fruit";
     private String productId;
 

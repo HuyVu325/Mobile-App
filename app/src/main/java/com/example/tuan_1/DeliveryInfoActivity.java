@@ -151,7 +151,6 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
                         sdf.setLenient(false);
 
-                        // Normalize today's date to the beginning of the day
                         Calendar cal = Calendar.getInstance();
                         cal.set(Calendar.HOUR_OF_DAY, 0);
                         cal.set(Calendar.MINUTE, 0);
@@ -159,7 +158,6 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                         cal.set(Calendar.MILLISECOND, 0);
                         Date today = cal.getTime();
 
-                        // Parse start and end dates
                         Date startDate = sdf.parse(startDateStr);
                         Date endDate = sdf.parse(endDateStr);
 

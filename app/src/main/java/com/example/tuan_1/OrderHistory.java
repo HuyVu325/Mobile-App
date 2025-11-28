@@ -8,7 +8,7 @@ public class OrderHistory {
     private List<Product> products;
     private double totalPrice;
     private String userId;
-    private String cancelReason; // Thêm trường lý do hủy
+    private String cancelReason;
 
     public OrderHistory() {
         // Required for Firebase

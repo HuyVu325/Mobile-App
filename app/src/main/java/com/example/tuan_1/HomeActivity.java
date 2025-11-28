@@ -30,7 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     private ArrayList<String> allPrices = new ArrayList<>();
     private ArrayList<String> allImageUrls = new ArrayList<>();
     private ArrayList<String> allDescriptions = new ArrayList<>();
-    private ArrayList<String> allCategories = new ArrayList<>(); // ⭐
+    private ArrayList<String> allCategories = new ArrayList<>();
 
     // Dữ liệu đang hiển thị (sau khi lọc)
     private ArrayList<String> productIds = new ArrayList<>();

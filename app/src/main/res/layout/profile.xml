@@ -107,6 +107,19 @@
             android:visibility="gone"
             android:layout_marginBottom="12dp" />
 
+        <!-- Nút Danh sách yêu thích -->
+        <Button
+            android:id="@+id/btnFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Danh sách yêu thích"
+            android:textAllCaps="false"
+            android:backgroundTint="#F44336"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Nút Lịch sử mua hàng -->
         <Button
             android:id="@+id/btnHistory"
             android:layout_width="match_parent"

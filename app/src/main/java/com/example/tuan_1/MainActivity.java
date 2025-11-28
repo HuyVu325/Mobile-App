@@ -120,6 +120,6 @@ public class MainActivity extends AppCompatActivity {
     private void goToHome() {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         startActivity(intent);
-        finish(); // không quay lại login nữa
+        finish();
     }
 }

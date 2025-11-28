@@ -44,9 +44,9 @@ public class UserManagementActivity extends AppCompatActivity {
         adapter = new SimpleAdapter(
                 this,
                 data,
-                R.layout.item_user_admin,          // layout 1 dòng user
-                new String[]{"username", "email"}, // key trong map
-                new int[]{R.id.tvUserName, R.id.tvUserEmail} // id TextView
+                R.layout.item_user_admin,
+                new String[]{"username", "email"},
+                new int[]{R.id.tvUserName, R.id.tvUserEmail}
         );
         listUsers.setAdapter(adapter);
 

@@ -39,8 +39,6 @@ public class AddProductActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-
-    // fruit / vegetable
     private String selectedCategory = "fruit";
 
     @Override

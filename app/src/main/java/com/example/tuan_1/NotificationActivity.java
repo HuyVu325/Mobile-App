@@ -146,7 +146,6 @@ public class NotificationActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi khi xóa thông báo", Toast.LENGTH_SHORT).show();
-                    // Có thể tải lại danh sách để đồng bộ nếu cần
                     loadNotifications();
                 });
     }
