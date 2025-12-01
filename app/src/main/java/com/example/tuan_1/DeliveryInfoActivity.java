@@ -84,7 +84,31 @@ public class DeliveryInfoActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập tên người nhận!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            confirmPurchase();
+            
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user == null) {
+                Toast.makeText(this, "Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String uid = user.getUid();
+            DocumentReference userDocRef = db.collection("users").document(uid);
+
+            userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String address = documentSnapshot.getString("address");
+                    if (address == null || address.trim().isEmpty()) {
+                        Toast.makeText(DeliveryInfoActivity.this, "Vui lòng cập nhật địa chỉ trong hồ sơ của bạn trước khi đặt hàng.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // Address exists, proceed with the purchase.
+                        confirmPurchase();
+                    }
+                } else {
+                    Toast.makeText(DeliveryInfoActivity.this, "Không thể xác minh thông tin người dùng.", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(e -> {
+                Toast.makeText(DeliveryInfoActivity.this, "Lỗi khi kiểm tra hồ sơ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         });
     }
 
