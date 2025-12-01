@@ -61,8 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             Toast.makeText(MainActivity.this,
-                                    "Đăng nhập thất bại: " + task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
+                                    "Sai email hoặc mật khẩu !" , Toast.LENGTH_SHORT).show();
                         }
                     });
         });
