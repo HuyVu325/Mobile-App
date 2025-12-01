@@ -2,8 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:padding="16dp">
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +16,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="#FF5722"
-            android:padding="8dp">
+            android:padding="12dp">
 
             <ImageView
                 android:id="@+id/btnBackAdd"
@@ -33,7 +32,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_marginStart="8dp" />
+                android:paddingStart="8dp" />
         </LinearLayout>
 
         <!-- NỘI DUNG -->
@@ -41,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="16dp">
 
             <!-- Tên sản phẩm -->
             <TextView
@@ -56,7 +55,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nhập tên sản phẩm"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/edittext_bg" />
 
             <!-- Giá -->
             <TextView
@@ -72,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Ví dụ: 15000"
                 android:inputType="number"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/edittext_bg" />
 
             <!-- Mô tả -->
             <TextView
@@ -89,7 +90,8 @@
                 android:hint="Nhập mô tả..."
                 android:minLines="3"
                 android:gravity="top"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/edittext_bg" />
 
             <!-- LOẠI SẢN PHẨM -->
             <TextView
